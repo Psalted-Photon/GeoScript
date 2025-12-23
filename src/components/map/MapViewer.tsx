@@ -75,13 +75,10 @@ const MapViewer: React.FC<MapViewerProps> = ({
     const mapRef = useRef<L.Map | null>(null);
     const markersRef = useRef<L.Marker[]>([]);
 
-    // Get tile URL from time period or fallback to OSM
-    const tileUrl = currentTimePeriod 
-        ? mapService.getTileUrl(currentTimePeriod.id)
-        : mapService.getBaseLayerUrl();
+    // Use base layer (Carto CDN) for now - historical tiles will be added later
+    const tileUrl = mapService.getBaseLayerUrl();
 
-    const attribution = currentTimePeriod?.tileLayer.attribution || 
-        '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
+    const attribution = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>';
 
     // Update center when prop changes
     useEffect(() => {

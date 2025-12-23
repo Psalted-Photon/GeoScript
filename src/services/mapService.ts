@@ -50,7 +50,8 @@ class MapService {
      * Get OpenStreetMap base layer URL
      */
     public getBaseLayerUrl(): string {
-        return 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+        // Using Carto's CDN basemap - more reliable than direct OSM
+        return 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png';
     }
 
     /**

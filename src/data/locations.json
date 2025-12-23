@@ -1,32 +1,218 @@
 [
     {
         "id": 1,
+        "name": "Garden of Eden",
+        "coordinates": {
+            "latitude": 33.3152,
+            "longitude": 44.3661
+        },
+        "description": "Traditional location near the confluence of the Tigris and Euphrates rivers.",
+        "relatedVerses": [
+            "Genesis 2:8-15",
+            "Genesis 3:23-24"
+        ],
+        "timePeriod": "creation"
+    },
+    {
+        "id": 2,
+        "name": "Mount Ararat",
+        "coordinates": {
+            "latitude": 39.7028,
+            "longitude": 44.2978
+        },
+        "description": "Where Noah's ark came to rest after the flood.",
+        "relatedVerses": [
+            "Genesis 8:4"
+        ],
+        "timePeriod": "patriarchs"
+    },
+    {
+        "id": 3,
+        "name": "Ur of the Chaldees",
+        "coordinates": {
+            "latitude": 30.9625,
+            "longitude": 46.1030
+        },
+        "description": "Abraham's birthplace in ancient Mesopotamia.",
+        "relatedVerses": [
+            "Genesis 11:28-31",
+            "Genesis 15:7"
+        ],
+        "timePeriod": "patriarchs"
+    },
+    {
+        "id": 4,
+        "name": "Haran",
+        "coordinates": {
+            "latitude": 36.8652,
+            "longitude": 39.0331
+        },
+        "description": "Where Abraham's family settled before God called him to Canaan.",
+        "relatedVerses": [
+            "Genesis 11:31-32",
+            "Genesis 12:4-5"
+        ],
+        "timePeriod": "patriarchs"
+    },
+    {
+        "id": 5,
+        "name": "Shechem",
+        "coordinates": {
+            "latitude": 32.2141,
+            "longitude": 35.2803
+        },
+        "description": "First place Abraham built an altar in Canaan.",
+        "relatedVerses": [
+            "Genesis 12:6-7",
+            "Genesis 33:18-20"
+        ],
+        "timePeriod": "patriarchs"
+    },
+    {
+        "id": 6,
+        "name": "Bethel",
+        "coordinates": {
+            "latitude": 31.9308,
+            "longitude": 35.2202
+        },
+        "description": "Where Abraham built an altar and Jacob saw the ladder to heaven.",
+        "relatedVerses": [
+            "Genesis 12:8",
+            "Genesis 28:10-19",
+            "Genesis 35:1-15"
+        ],
+        "timePeriod": "patriarchs"
+    },
+    {
+        "id": 7,
+        "name": "Hebron",
+        "coordinates": {
+            "latitude": 31.5326,
+            "longitude": 35.0998
+        },
+        "description": "Where Abraham, Isaac, and Jacob are buried. Ancient city of the patriarchs.",
+        "relatedVerses": [
+            "Genesis 13:18",
+            "Genesis 23:1-20",
+            "Genesis 35:27"
+        ],
+        "timePeriod": "patriarchs"
+    },
+    {
+        "id": 8,
+        "name": "Sodom",
+        "coordinates": {
+            "latitude": 31.0447,
+            "longitude": 35.3931
+        },
+        "description": "Destroyed city near the Dead Sea, located in the plain.",
+        "relatedVerses": [
+            "Genesis 13:10-13",
+            "Genesis 19:1-29"
+        ],
+        "timePeriod": "patriarchs"
+    },
+    {
+        "id": 9,
+        "name": "Gomorrah",
+        "coordinates": {
+            "latitude": 31.0500,
+            "longitude": 35.4000
+        },
+        "description": "Sister city to Sodom, destroyed by fire and brimstone.",
+        "relatedVerses": [
+            "Genesis 19:24-28"
+        ],
+        "timePeriod": "patriarchs"
+    },
+    {
+        "id": 10,
+        "name": "Beersheba",
+        "coordinates": {
+            "latitude": 31.2518,
+            "longitude": 34.7913
+        },
+        "description": "Southern boundary of Israel, where Abraham made a covenant.",
+        "relatedVerses": [
+            "Genesis 21:31-33",
+            "Genesis 26:23-25",
+            "Genesis 46:1"
+        ],
+        "timePeriod": "patriarchs"
+    },
+    {
+        "id": 11,
+        "name": "Peniel (Penuel)",
+        "coordinates": {
+            "latitude": 32.2158,
+            "longitude": 35.6519
+        },
+        "description": "Where Jacob wrestled with God and was renamed Israel.",
+        "relatedVerses": [
+            "Genesis 32:24-30"
+        ],
+        "timePeriod": "patriarchs"
+    },
+    {
+        "id": 12,
+        "name": "Dothan",
+        "coordinates": {
+            "latitude": 32.4000,
+            "longitude": 35.2500
+        },
+        "description": "Where Joseph's brothers sold him into slavery.",
+        "relatedVerses": [
+            "Genesis 37:17-28"
+        ],
+        "timePeriod": "patriarchs"
+    },
+    {
+        "id": 13,
+        "name": "Egypt (Goshen)",
+        "coordinates": {
+            "latitude": 30.8481,
+            "longitude": 31.9656
+        },
+        "description": "The land of Goshen where Jacob's family settled.",
+        "relatedVerses": [
+            "Genesis 45:10",
+            "Genesis 46:28-34",
+            "Genesis 47:1-6"
+        ],
+        "timePeriod": "patriarchs"
+    },
+    {
+        "id": 14,
         "name": "Jerusalem",
         "coordinates": {
             "latitude": 31.7683,
             "longitude": 35.2137
         },
-        "description": "The capital city of Israel, significant in biblical history.",
+        "description": "The capital city of Israel, significant throughout biblical history.",
         "relatedVerses": [
             "Matthew 21:10",
+            "Luke 2:41",
             "Luke 19:41"
-        ]
+        ],
+        "timePeriod": "jesus-ministry"
     },
     {
-        "id": 2,
+        "id": 15,
         "name": "Bethlehem",
         "coordinates": {
             "latitude": 31.7054,
             "longitude": 35.2024
         },
-        "description": "The birthplace of Jesus, located near Jerusalem.",
+        "description": "The birthplace of Jesus, city of David.",
         "relatedVerses": [
             "Matthew 2:1",
-            "Luke 2:4-7"
-        ]
+            "Luke 2:4-7",
+            "Micah 5:2"
+        ],
+        "timePeriod": "jesus-ministry"
     },
     {
-        "id": 3,
+        "id": 16,
         "name": "Nazareth",
         "coordinates": {
             "latitude": 32.6996,
@@ -35,24 +221,45 @@
         "description": "The town where Jesus grew up.",
         "relatedVerses": [
             "Matthew 2:23",
+            "Luke 2:39-40",
             "John 1:46"
-        ]
+        ],
+        "timePeriod": "jesus-ministry"
     },
     {
-        "id": 4,
+        "id": 17,
         "name": "Capernaum",
         "coordinates": {
             "latitude": 32.8802,
             "longitude": 35.5724
         },
-        "description": "A fishing village on the Sea of Galilee, where Jesus performed many miracles.",
+        "description": "A fishing village on the Sea of Galilee, Jesus' ministry headquarters.",
         "relatedVerses": [
             "Matthew 4:13",
             "Mark 1:21"
-        ]
+            "Matthew 4:13",
+            "Matthew 8:5",
+            "Mark 1:21"
+        ],
+        "timePeriod": "jesus-ministry"
     },
     {
-        "id": 5,
+        "id": 18,
+        "name": "Sea of Galilee",
+        "coordinates": {
+            "latitude": 32.8333,
+            "longitude": 35.5833
+        },
+        "description": "Freshwater lake where Jesus called disciples and calmed the storm.",
+        "relatedVerses": [
+            "Matthew 4:18",
+            "Mark 4:35-41",
+            "John 21:1-14"
+        ],
+        "timePeriod": "jesus-ministry"
+    },
+    {
+        "id": 19,
         "name": "Mount Sinai",
         "coordinates": {
             "latitude": 28.5406,
@@ -61,7 +268,9 @@
         "description": "The mountain where Moses received the Ten Commandments.",
         "relatedVerses": [
             "Exodus 19:20",
-            "Exodus 20:1"
-        ]
+            "Exodus 20:1-17",
+            "Exodus 24:12-18"
+        ],
+        "timePeriod": "exodus"
     }
 ]
