@@ -26,6 +26,7 @@ interface MapViewerProps {
     onMapClick?: (coords: Coordinates) => void;
     centerOn?: Coordinates;
     zoom?: number;
+    selectedPinId?: string;
 }
 
 /**
@@ -64,7 +65,8 @@ const MapViewer: React.FC<MapViewerProps> = ({
     onPinClick,
     onMapClick,
     centerOn,
-    zoom
+    zoom,
+    selectedPinId
 }) => {
     const [mapCenter, setMapCenter] = useState<Coordinates>(
         centerOn || currentTimePeriod?.defaultCenter || DEFAULT_MAP_CENTER
@@ -119,7 +121,19 @@ const MapViewer: React.FC<MapViewerProps> = ({
 
         // Add new markers
         pins.forEach(pin => {
-            const marker = L.marker([pin.coordinates.latitude, pin.coordinates.longitude])
+            // Create custom icon based on selection state
+            const isSelected = selectedPinId === pin.id;
+            const customIcon = L.icon({
+                iconUrl: iconUrl,
+                shadowUrl: iconShadow,
+                iconSize: [25, 41],
+                iconAnchor: [12, 41],
+                className: isSelected ? 'selected-marker' : ''
+            });
+
+            const marker = L.marker([pin.coordinates.latitude, pin.coordinates.longitude], {
+                icon: customIcon
+            })
                 .bindPopup(`
                     <div style="min-width: 150px;">
                         <h4 style="margin: 0 0 8px 0; font-size: 14px; font-weight: bold;">
@@ -133,6 +147,14 @@ const MapViewer: React.FC<MapViewerProps> = ({
                 `)
                 .addTo(mapRef.current!);
 
+            // Apply red filter to selected marker
+            if (isSelected) {
+                const iconElement = marker.getElement();
+                if (iconElement) {
+                    iconElement.style.filter = 'hue-rotate(220deg) saturate(2)';
+                }
+            }
+
             if (onPinClick) {
                 marker.on('click', () => onPinClick(pin));
             }
@@ -144,7 +166,7 @@ const MapViewer: React.FC<MapViewerProps> = ({
             markersRef.current.forEach(marker => marker.remove());
             markersRef.current = [];
         };
-    }, [pins, onPinClick]);
+    }, [pins, onPinClick, selectedPinId]);
 
     return (
         <div style={{ height: '100%', width: '100%', position: 'relative' }}>

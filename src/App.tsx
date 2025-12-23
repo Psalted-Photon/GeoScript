@@ -23,6 +23,7 @@ const App: React.FC = () => {
   const [interlinearEnabled, setInterlinearEnabled] = useState<boolean>(false);
   const [showParallel, setShowParallel] = useState<boolean>(false);
   const [biblePanelVisible, setBiblePanelVisible] = useState<boolean>(false);
+  const [selectedPin, setSelectedPin] = useState<MapPin | undefined>(undefined);
 
   // Genesis sample pins for testing
   const genesisPins: MapPin[] = [
@@ -40,29 +41,117 @@ const App: React.FC = () => {
     {
       id: 'gen-2',
       locationName: 'Ur of the Chaldees',
-      verseReference: 'Genesis 12:1',
+      verseReference: 'Genesis 11:31',
       coordinates: {
         latitude: 30.9625,
         longitude: 46.1030
       },
-      description: 'God calls Abram to leave',
+      description: "Abram's birthplace",
       timePeriodId: 'patriarchs'
     },
     {
       id: 'gen-3',
-      locationName: 'Shechem',
-      verseReference: 'Genesis 12:7',
+      locationName: 'Haran',
+      verseReference: 'Genesis 11:31',
       coordinates: {
-        latitude: 32.2141,
-        longitude: 35.2803
+        latitude: 36.8683,
+        longitude: 39.0331
       },
-      description: 'First altar in Canaan',
+      description: "Where Abram's family settled",
       timePeriodId: 'patriarchs'
     },
     {
       id: 'gen-4',
+      locationName: 'Shechem',
+      verseReference: 'Genesis 12:6',
+      coordinates: {
+        latitude: 32.2141,
+        longitude: 35.2803
+      },
+      description: 'First stop in Canaan',
+      timePeriodId: 'patriarchs'
+    },
+    {
+      id: 'gen-5',
       locationName: 'Bethel',
-      verseReference: 'Genesis 28:12',
+      verseReference: 'Genesis 12:8',
+      coordinates: {
+        latitude: 31.9308,
+        longitude: 35.2202
+      },
+      description: 'Abram built an altar',
+      timePeriodId: 'patriarchs'
+    },
+    {
+      id: 'gen-6',
+      locationName: 'Egypt',
+      verseReference: 'Genesis 12:10',
+      coordinates: {
+        latitude: 30.0444,
+        longitude: 31.2357
+      },
+      description: 'Abram went due to famine',
+      timePeriodId: 'patriarchs'
+    },
+    {
+      id: 'gen-7',
+      locationName: 'Mamre (Hebron)',
+      verseReference: 'Genesis 13:18',
+      coordinates: {
+        latitude: 31.5326,
+        longitude: 35.0998
+      },
+      description: 'Abram settled and built altar',
+      timePeriodId: 'patriarchs'
+    },
+    {
+      id: 'gen-8',
+      locationName: 'Sodom',
+      verseReference: 'Genesis 13:12',
+      coordinates: {
+        latitude: 31.0500,
+        longitude: 35.4000
+      },
+      description: 'Where Lot chose to live',
+      timePeriodId: 'patriarchs'
+    },
+    {
+      id: 'gen-9',
+      locationName: 'Dan',
+      verseReference: 'Genesis 14:14',
+      coordinates: {
+        latitude: 33.2486,
+        longitude: 35.6522
+      },
+      description: 'Abraham pursued captors',
+      timePeriodId: 'patriarchs'
+    },
+    {
+      id: 'gen-10',
+      locationName: 'Beersheba',
+      verseReference: 'Genesis 21:31',
+      coordinates: {
+        latitude: 31.2444,
+        longitude: 34.7925
+      },
+      description: 'Abraham made covenant with Abimelech',
+      timePeriodId: 'patriarchs'
+    },
+    {
+      id: 'gen-11',
+      locationName: 'Mount Moriah',
+      verseReference: 'Genesis 22:2',
+      coordinates: {
+        latitude: 31.7780,
+        longitude: 35.2354
+      },
+      description: 'Abraham offered Isaac',
+      timePeriodId: 'patriarchs'
+    },
+    {
+      id: 'gen-12',
+      locationName: 'Bethel',
+      verseReference: 'Genesis 28:19',
       coordinates: {
         latitude: 31.9308,
         longitude: 35.2202
@@ -71,14 +160,47 @@ const App: React.FC = () => {
       timePeriodId: 'patriarchs'
     },
     {
-      id: 'gen-5',
+      id: 'gen-13',
+      locationName: 'Paddan Aram',
+      verseReference: 'Genesis 28:5',
+      coordinates: {
+        latitude: 36.8683,
+        longitude: 39.0331
+      },
+      description: 'Jacob fled to Laban',
+      timePeriodId: 'patriarchs'
+    },
+    {
+      id: 'gen-14',
       locationName: 'Peniel',
-      verseReference: 'Genesis 32:28',
+      verseReference: 'Genesis 32:30',
       coordinates: {
         latitude: 32.2158,
         longitude: 35.6519
       },
-      description: 'Jacob renamed Israel',
+      description: 'Jacob wrestled with God',
+      timePeriodId: 'patriarchs'
+    },
+    {
+      id: 'gen-15',
+      locationName: 'Dothan',
+      verseReference: 'Genesis 37:17',
+      coordinates: {
+        latitude: 32.4097,
+        longitude: 35.3178
+      },
+      description: 'Joseph sold by his brothers',
+      timePeriodId: 'patriarchs'
+    },
+    {
+      id: 'gen-16',
+      locationName: 'Goshen',
+      verseReference: 'Genesis 47:6',
+      coordinates: {
+        latitude: 30.8333,
+        longitude: 31.4167
+      },
+      description: "Jacob's family settled in Egypt",
       timePeriodId: 'patriarchs'
     }
   ];
@@ -142,6 +264,9 @@ const App: React.FC = () => {
   const handlePinClick = (pin: MapPin) => {
     console.log('Pin clicked:', pin.locationName, pin.verseReference);
     
+    // Store the selected pin
+    setSelectedPin(pin);
+    
     // Parse the verse reference
     const match = pin.verseReference.match(/^(\d?\s*[A-Za-z]+)\s+(\d+):(\d+)(?:-(\d+))?$/);
     if (match) {
@@ -184,6 +309,7 @@ const App: React.FC = () => {
           currentTimePeriod={currentTimePeriod}
           transparency={transparency}
           onPinClick={handlePinClick}
+          selectedPinId={selectedPin?.id}
         />
 
         {/* Map Controls Overlay */}
@@ -198,40 +324,46 @@ const App: React.FC = () => {
         {/* Test Button - Bottom Left */}
         <div style={{
           position: 'absolute',
-          bottom: '20px',
+          bottom: window.innerWidth < 768 ? '100px' : '20px',
           left: '20px',
-          zIndex: 1000
+          zIndex: 1000,
+          display: 'flex',
+          flexDirection: window.innerWidth < 768 ? 'column' : 'row',
+          gap: '10px'
         }}>
           <button
             onClick={toggleSamplePins}
             style={{
-              padding: '10px 20px',
+              padding: window.innerWidth < 768 ? '12px 16px' : '10px 20px',
               backgroundColor: '#3b82f6',
               color: 'white',
               border: 'none',
               borderRadius: '6px',
               cursor: 'pointer',
-              fontSize: '14px',
+              fontSize: window.innerWidth < 768 ? '16px' : '14px',
               fontWeight: '600',
               boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
-              marginRight: '10px'
+              whiteSpace: 'nowrap',
+              minWidth: window.innerWidth < 768 ? '140px' : 'auto'
             }}
           >
-            {mapPins.length === 0 ? 'Show Sample Pins' : 'Hide Sample Pins'}
+            {mapPins.length === 0 ? 'Show Pins' : 'Hide Pins'}
           </button>
           
           <button
             onClick={() => setBiblePanelVisible(!biblePanelVisible)}
             style={{
-              padding: '10px 20px',
+              padding: window.innerWidth < 768 ? '12px 16px' : '10px 20px',
               backgroundColor: biblePanelVisible ? '#ef4444' : '#10b981',
               color: 'white',
               border: 'none',
               borderRadius: '6px',
               cursor: 'pointer',
-              fontSize: '14px',
+              fontSize: window.innerWidth < 768 ? '16px' : '14px',
               fontWeight: '600',
-              boxShadow: '0 2px 8px rgba(0,0,0,0.15)'
+              boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+              whiteSpace: 'nowrap',
+              minWidth: window.innerWidth < 768 ? '140px' : 'auto'
             }}
           >
             {biblePanelVisible ? 'Hide Bible' : 'Show Bible'}
@@ -279,6 +411,33 @@ const App: React.FC = () => {
           overflow: 'hidden',
           maxWidth: '600px'
         }}>
+          {/* Location Header - Shows which pin was clicked */}
+          {selectedPin && (
+            <div style={{
+              padding: '15px 20px',
+              backgroundColor: '#3b82f6',
+              color: 'white',
+              borderBottom: '2px solid #2563eb'
+            }}>
+              <h2 style={{
+                margin: '0 0 5px 0',
+                fontSize: '18px',
+                fontWeight: '700'
+              }}>
+                📍 {selectedPin.locationName}
+              </h2>
+              {selectedPin.description && (
+                <p style={{
+                  margin: 0,
+                  fontSize: '14px',
+                  opacity: 0.95
+                }}>
+                  {selectedPin.description}
+                </p>
+              )}
+            </div>
+          )}
+          
           {/* Bible Controls Header */}
           <div style={{
             padding: '15px',
