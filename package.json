@@ -1,35 +1,52 @@
 {
-  "name": "bible-map-app",
+  "name": "geoscript",
   "version": "1.0.0",
+  "homepage": "https://psalted-photon.github.io/GeoScript",
   "description": "An interactive Bible and map application with features like verse-linked map pins, animated journeys, and more.",
   "main": "src/index.tsx",
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build"
   },
   "dependencies": {
-    "react": "^17.0.2",
-    "react-dom": "^17.0.2",
-    "react-scripts": "4.0.3",
-    "leaflet": "^1.7.1",
-    "three": "^0.126.0",
-    "react-leaflet": "^3.2.0"
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-scripts": "5.0.1",
+    "leaflet": "^1.9.4",
+    "react-leaflet": "^4.2.1",
+    "typescript": "^4.9.5"
   },
   "devDependencies": {
-    "typescript": "^4.1.3",
-    "@types/react": "^17.0.2",
-    "@types/react-dom": "^17.0.2",
-    "@types/leaflet": "^1.7.3"
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0",
+    "@types/leaflet": "^1.9.8",
+    "gh-pages": "^6.1.0"
   },
   "keywords": [
     "bible",
     "map",
     "interactive",
     "journey",
-    "education"
+    "education",
+    "geoscript",
+    "biblical-geography"
   ],
-  "author": "Your Name",
-  "license": "MIT"
+  "author": "Psalted-Photon",
+  "license": "MIT",
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
 }

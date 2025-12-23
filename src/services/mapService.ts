@@ -1,73 +1,140 @@
-import { LocationData } from '../types/location';
-import { TimePeriodData } from '../types/map';
+import { TimePeriod, Coordinates, MapBounds, BIBLICAL_REGION_BOUNDS } from '../types/map';
+import timePeriodsData from '../data/timePeriods.json';
 
+/**
+ * MapService handles map configuration, tile layer management,
+ * and coordinate utilities for the Leaflet-based map system
+ */
 class MapService {
-    private map: any; // Replace with actual map type
-    private layers: any[]; // Replace with actual layer type
-    private locations: LocationData[];
-    private timePeriods: TimePeriodData[];
+    private timePeriods: TimePeriod[];
 
     constructor() {
-        this.map = this.initializeMap();
-        this.layers = [];
-        this.locations = [];
-        this.timePeriods = [];
+        this.timePeriods = (timePeriodsData as any).timePeriods as TimePeriod[];
     }
 
-    private initializeMap() {
-        // Initialize the map instance here
-    }
-
-    public fetchMapData() {
-        // Fetch map data and update layers and locations
-    }
-
-    public addMapPin(location: LocationData) {
-        // Add a pin to the map for the given location
-    }
-
-    public removeMapPin(locationId: string) {
-        // Remove a pin from the map by location ID
-    }
-
-    public setMapTransparency(value: number) {
-        // Set the transparency of the map layers
-    }
-
-    public toggleLayer(layerId: string, isVisible: boolean) {
-        // Show or hide a specific map layer
-    }
-
-    public setTimePeriodLayer(timePeriodId: string) {
-        // Set the map to display a specific historical time period layer
-    }
-
-    public animateJourney(journeyId: string) {
-        // Animate a journey on the map
-    }
-
-    public searchLocation(query: string) {
-        // Search for a location and return results
-    }
-
-    public syncMapWithVerse(verseId: string) {
-        // Sync the map view with the selected verse
-    }
-
-    public enable3DTerrain() {
-        // Enable 3D terrain mode on the map
-    }
-
-    public disable3DTerrain() {
-        // Disable 3D terrain mode on the map
-    }
-
-    public getLocations() {
-        return this.locations;
-    }
-
-    public getTimePeriods() {
+    /**
+     * Get all available time periods
+     */
+    public getTimePeriods(): TimePeriod[] {
         return this.timePeriods;
+    }
+
+    /**
+     * Get a specific time period by ID
+     */
+    public getTimePeriodById(id: string): TimePeriod | undefined {
+        return this.timePeriods.find(period => period.id === id);
+    }
+
+    /**
+     * Get the default time period (Jesus' Ministry)
+     */
+    public getDefaultTimePeriod(): TimePeriod {
+        return this.getTimePeriodById('jesus-ministry') || this.timePeriods[0];
+    }
+
+    /**
+     * Generate tile URL for a given time period
+     * Falls back to OSM if historical tiles not available
+     */
+    public getTileUrl(timePeriodId: string): string {
+        const period = this.getTimePeriodById(timePeriodId);
+        if (period) {
+            return period.tileLayer.url;
+        }
+        // Fallback to OpenStreetMap
+        return 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+    }
+
+    /**
+     * Get OpenStreetMap base layer URL
+     */
+    public getBaseLayerUrl(): string {
+        return 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+    }
+
+    /**
+     * Calculate distance between two coordinates (in km)
+     * Using Haversine formula
+     */
+    public calculateDistance(coord1: Coordinates, coord2: Coordinates): number {
+        const R = 6371; // Earth's radius in km
+        const dLat = this.toRadians(coord2.latitude - coord1.latitude);
+        const dLon = this.toRadians(coord2.longitude - coord1.longitude);
+        
+        const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                  Math.cos(this.toRadians(coord1.latitude)) * 
+                  Math.cos(this.toRadians(coord2.latitude)) *
+                  Math.sin(dLon / 2) * Math.sin(dLon / 2);
+        
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        return R * c;
+    }
+
+    /**
+     * Check if coordinates are within biblical region bounds
+     */
+    public isInBiblicalRegion(coords: Coordinates): boolean {
+        const bounds = BIBLICAL_REGION_BOUNDS;
+        return coords.latitude >= bounds.south &&
+               coords.latitude <= bounds.north &&
+               coords.longitude >= bounds.west &&
+               coords.longitude <= bounds.east;
+    }
+
+    /**
+     * Get appropriate zoom level based on journey span
+     */
+    public calculateZoomForBounds(bounds: MapBounds): number {
+        const latDiff = bounds.north - bounds.south;
+        const lonDiff = bounds.east - bounds.west;
+        const maxDiff = Math.max(latDiff, lonDiff);
+        
+        if (maxDiff > 20) return 4;
+        if (maxDiff > 10) return 5;
+        if (maxDiff > 5) return 6;
+        if (maxDiff > 2) return 7;
+        if (maxDiff > 1) return 8;
+        return 9;
+    }
+
+    /**
+     * Get bounds that encompass an array of coordinates
+     */
+    public getBoundsForCoordinates(coords: Coordinates[]): MapBounds {
+        if (coords.length === 0) {
+            return BIBLICAL_REGION_BOUNDS;
+        }
+
+        const lats = coords.map(c => c.latitude);
+        const lons = coords.map(c => c.longitude);
+
+        return {
+            north: Math.max(...lats),
+            south: Math.min(...lats),
+            east: Math.max(...lons),
+            west: Math.min(...lons)
+        };
+    }
+
+    /**
+     * Format coordinates for display
+     */
+    public formatCoordinates(coords: Coordinates): string {
+        const lat = coords.latitude >= 0 ? 
+            `${coords.latitude.toFixed(4)}°N` : 
+            `${Math.abs(coords.latitude).toFixed(4)}°S`;
+        const lon = coords.longitude >= 0 ? 
+            `${coords.longitude.toFixed(4)}°E` : 
+            `${Math.abs(coords.longitude).toFixed(4)}°W`;
+        return `${lat}, ${lon}`;
+    }
+
+    /**
+     * Convert degrees to radians
+     */
+    private toRadians(degrees: number): number {
+        return degrees * (Math.PI / 180);
     }
 }
 

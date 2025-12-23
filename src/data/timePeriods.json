@@ -1,46 +1,151 @@
 {
   "timePeriods": [
     {
-      "name": "Ancient Israel",
-      "startYear": -1200,
-      "endYear": -586,
-      "description": "The period of the Judges and the united monarchy of Israel.",
-      "mapLayer": "ancient_israel"
+      "id": "patriarchs",
+      "name": "patriarchs",
+      "displayName": "Patriarchs Era",
+      "dateRange": "2000-1500 BC",
+      "description": "The time of Abraham, Isaac, and Jacob. Key locations include Ur, Haran, Canaan, and Egypt.",
+      "tileLayer": {
+        "id": "patriarchs-layer",
+        "name": "Patriarchs Map",
+        "url": "https://psalted-photon.github.io/GeoScript/tiles/patriarchs/{z}/{x}/{y}.png",
+        "attribution": "Historical Map Data",
+        "minZoom": 5,
+        "maxZoom": 10
+      },
+      "defaultCenter": {
+        "latitude": 31.5,
+        "longitude": 35.0
+      },
+      "defaultZoom": 6,
+      "iconColor": "#8B4513"
     },
     {
-      "name": "Exilic Period",
-      "startYear": -586,
-      "endYear": -538,
-      "description": "The time when the Israelites were exiled to Babylon.",
-      "mapLayer": "exilic_period"
+      "id": "exodus",
+      "name": "exodus",
+      "displayName": "Exodus & Conquest",
+      "dateRange": "1446-1406 BC",
+      "description": "Journey from Egypt through the wilderness to Canaan. Includes the Red Sea crossing, Mount Sinai, and entry into the Promised Land.",
+      "tileLayer": {
+        "id": "exodus-layer",
+        "name": "Exodus Route Map",
+        "url": "https://psalted-photon.github.io/GeoScript/tiles/exodus/{z}/{x}/{y}.png",
+        "attribution": "Historical Map Data",
+        "minZoom": 5,
+        "maxZoom": 10
+      },
+      "defaultCenter": {
+        "latitude": 30.0,
+        "longitude": 34.0
+      },
+      "defaultZoom": 6,
+      "iconColor": "#DAA520"
     },
     {
-      "name": "Second Temple Period",
-      "startYear": -538,
-      "endYear": 70,
-      "description": "The era of the rebuilding of the Temple and the rise of various Jewish sects.",
-      "mapLayer": "second_temple"
+      "id": "united-kingdom",
+      "name": "united-kingdom",
+      "displayName": "United Kingdom",
+      "dateRange": "1050-931 BC",
+      "description": "The reigns of Saul, David, and Solomon. Jerusalem becomes the capital, and the temple is built.",
+      "tileLayer": {
+        "id": "united-kingdom-layer",
+        "name": "United Kingdom Map",
+        "url": "https://psalted-photon.github.io/GeoScript/tiles/united-kingdom/{z}/{x}/{y}.png",
+        "attribution": "Historical Map Data",
+        "minZoom": 5,
+        "maxZoom": 11
+      },
+      "defaultCenter": {
+        "latitude": 31.7683,
+        "longitude": 35.2137
+      },
+      "defaultZoom": 7,
+      "iconColor": "#4169E1"
     },
     {
-      "name": "Roman Judea",
-      "startYear": 6,
-      "endYear": 70,
-      "description": "The period of Roman rule over Judea leading up to the destruction of the Second Temple.",
-      "mapLayer": "roman_judea"
+      "id": "divided-kingdom",
+      "name": "divided-kingdom",
+      "displayName": "Divided Kingdom",
+      "dateRange": "931-586 BC",
+      "description": "Israel (north) and Judah (south) split. Prophets minister, eventually leading to Assyrian and Babylonian conquests.",
+      "tileLayer": {
+        "id": "divided-kingdom-layer",
+        "name": "Divided Kingdom Map",
+        "url": "https://psalted-photon.github.io/GeoScript/tiles/divided-kingdom/{z}/{x}/{y}.png",
+        "attribution": "Historical Map Data",
+        "minZoom": 5,
+        "maxZoom": 11
+      },
+      "defaultCenter": {
+        "latitude": 32.0,
+        "longitude": 35.5
+      },
+      "defaultZoom": 7,
+      "iconColor": "#DC143C"
     },
     {
-      "name": "Early Christianity",
-      "startYear": 30,
-      "endYear": 100,
-      "description": "The formative years of the Christian church and the spread of its teachings.",
-      "mapLayer": "early_christianity"
+      "id": "jesus-ministry",
+      "name": "jesus-ministry",
+      "displayName": "Jesus' Ministry",
+      "dateRange": "27-30 AD",
+      "description": "The life and ministry of Jesus in Galilee, Judea, and surrounding regions. Includes Nazareth, Capernaum, Jerusalem.",
+      "tileLayer": {
+        "id": "jesus-ministry-layer",
+        "name": "Jesus Ministry Map",
+        "url": "https://psalted-photon.github.io/GeoScript/tiles/jesus-ministry/{z}/{x}/{y}.png",
+        "attribution": "Historical Map Data",
+        "minZoom": 6,
+        "maxZoom": 12
+      },
+      "defaultCenter": {
+        "latitude": 32.7,
+        "longitude": 35.5
+      },
+      "defaultZoom": 8,
+      "iconColor": "#228B22"
     },
     {
-      "name": "Byzantine Period",
-      "startYear": 330,
-      "endYear": 640,
-      "description": "The time of the Byzantine Empire's influence in the region.",
-      "mapLayer": "byzantine_period"
+      "id": "pauls-journeys",
+      "name": "pauls-journeys",
+      "displayName": "Paul's Missionary Journeys",
+      "dateRange": "46-67 AD",
+      "description": "Paul's three missionary journeys and voyage to Rome. Covers Asia Minor, Greece, and the Mediterranean.",
+      "tileLayer": {
+        "id": "pauls-journeys-layer",
+        "name": "Paul's Journeys Map",
+        "url": "https://psalted-photon.github.io/GeoScript/tiles/pauls-journeys/{z}/{x}/{y}.png",
+        "attribution": "Historical Map Data",
+        "minZoom": 4,
+        "maxZoom": 10
+      },
+      "defaultCenter": {
+        "latitude": 38.0,
+        "longitude": 28.0
+      },
+      "defaultZoom": 5,
+      "iconColor": "#9370DB"
+    },
+    {
+      "id": "early-church",
+      "name": "early-church",
+      "displayName": "Early Church",
+      "dateRange": "30-100 AD",
+      "description": "Spread of Christianity from Jerusalem to the Roman Empire. Seven churches of Revelation, apostolic missions.",
+      "tileLayer": {
+        "id": "early-church-layer",
+        "name": "Early Church Map",
+        "url": "https://psalted-photon.github.io/GeoScript/tiles/early-church/{z}/{x}/{y}.png",
+        "attribution": "Historical Map Data",
+        "minZoom": 4,
+        "maxZoom": 10
+      },
+      "defaultCenter": {
+        "latitude": 37.0,
+        "longitude": 30.0
+      },
+      "defaultZoom": 5,
+      "iconColor": "#FF8C00"
     }
   ]
 }

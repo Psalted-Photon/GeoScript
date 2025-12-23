@@ -1,26 +1,58 @@
 import React from 'react';
+import TimeLayerSelector from './TimeLayerSelector';
+import TransparencySlider from './TransparencySlider';
+import { TimePeriod } from '../../types/map';
 
-const MapControls: React.FC = () => {
-    const handleZoomIn = () => {
-        // Logic for zooming in on the map
-    };
+interface MapControlsProps {
+    currentTimePeriod?: TimePeriod;
+    transparency: number;
+    onTimePeriodChange: (period: TimePeriod) => void;
+    onTransparencyChange: (value: number) => void;
+    position?: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
+}
 
-    const handleZoomOut = () => {
-        // Logic for zooming out on the map
-    };
+const MapControls: React.FC<MapControlsProps> = ({
+    currentTimePeriod,
+    transparency,
+    onTimePeriodChange,
+    onTransparencyChange,
+    position = 'top-right'
+}) => {
+    const getPositionStyles = (): React.CSSProperties => {
+        const baseStyles: React.CSSProperties = {
+            position: 'absolute',
+            zIndex: 1000,
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '12px',
+            padding: '12px'
+        };
 
-    const handlePan = (direction: string) => {
-        // Logic for panning the map in the specified direction
+        switch (position) {
+            case 'top-left':
+                return { ...baseStyles, top: 0, left: 0 };
+            case 'top-right':
+                return { ...baseStyles, top: 0, right: 0 };
+            case 'bottom-left':
+                return { ...baseStyles, bottom: 0, left: 0 };
+            case 'bottom-right':
+                return { ...baseStyles, bottom: 0, right: 0 };
+            default:
+                return { ...baseStyles, top: 0, right: 0 };
+        }
     };
 
     return (
-        <div className="map-controls">
-            <button onClick={handleZoomIn}>Zoom In</button>
-            <button onClick={handleZoomOut}>Zoom Out</button>
-            <button onClick={() => handlePan('up')}>Pan Up</button>
-            <button onClick={() => handlePan('down')}>Pan Down</button>
-            <button onClick={() => handlePan('left')}>Pan Left</button>
-            <button onClick={() => handlePan('right')}>Pan Right</button>
+        <div style={getPositionStyles()}>
+            <TimeLayerSelector
+                currentTimePeriod={currentTimePeriod}
+                onTimePeriodChange={onTimePeriodChange}
+            />
+            
+            <TransparencySlider
+                value={transparency}
+                onChange={onTransparencyChange}
+            />
         </div>
     );
 };
