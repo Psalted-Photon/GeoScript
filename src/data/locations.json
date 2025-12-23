@@ -1,0 +1,67 @@
+[
+    {
+        "id": 1,
+        "name": "Jerusalem",
+        "coordinates": {
+            "latitude": 31.7683,
+            "longitude": 35.2137
+        },
+        "description": "The capital city of Israel, significant in biblical history.",
+        "relatedVerses": [
+            "Matthew 21:10",
+            "Luke 19:41"
+        ]
+    },
+    {
+        "id": 2,
+        "name": "Bethlehem",
+        "coordinates": {
+            "latitude": 31.7054,
+            "longitude": 35.2024
+        },
+        "description": "The birthplace of Jesus, located near Jerusalem.",
+        "relatedVerses": [
+            "Matthew 2:1",
+            "Luke 2:4-7"
+        ]
+    },
+    {
+        "id": 3,
+        "name": "Nazareth",
+        "coordinates": {
+            "latitude": 32.6996,
+            "longitude": 35.3035
+        },
+        "description": "The town where Jesus grew up.",
+        "relatedVerses": [
+            "Matthew 2:23",
+            "John 1:46"
+        ]
+    },
+    {
+        "id": 4,
+        "name": "Capernaum",
+        "coordinates": {
+            "latitude": 32.8802,
+            "longitude": 35.5724
+        },
+        "description": "A fishing village on the Sea of Galilee, where Jesus performed many miracles.",
+        "relatedVerses": [
+            "Matthew 4:13",
+            "Mark 1:21"
+        ]
+    },
+    {
+        "id": 5,
+        "name": "Mount Sinai",
+        "coordinates": {
+            "latitude": 28.5406,
+            "longitude": 33.9755
+        },
+        "description": "The mountain where Moses received the Ten Commandments.",
+        "relatedVerses": [
+            "Exodus 19:20",
+            "Exodus 20:1"
+        ]
+    }
+]

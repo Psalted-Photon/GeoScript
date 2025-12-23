@@ -1,0 +1,42 @@
+{
+  "journeys": [
+    {
+      "id": "1",
+      "name": "Exodus Journey",
+      "description": "The journey of the Israelites from Egypt to the Promised Land.",
+      "path": [
+        { "lat": 30.5852, "lng": 34.9519, "verse": "Exodus 12:31" },
+        { "lat": 30.5852, "lng": 35.0000, "verse": "Exodus 14:1" },
+        { "lat": 31.0000, "lng": 35.5000, "verse": "Exodus 16:1" },
+        { "lat": 31.5000, "lng": 35.8000, "verse": "Exodus 17:1" }
+      ],
+      "duration": "40 years",
+      "timePeriod": "1446 BC - 1406 BC"
+    },
+    {
+      "id": "2",
+      "name": "Paul's Missionary Journey",
+      "description": "The travels of Apostle Paul to spread the Gospel.",
+      "path": [
+        { "lat": 36.2048, "lng": 28.9784, "verse": "Acts 13:4" },
+        { "lat": 39.9334, "lng": 32.8597, "verse": "Acts 14:1" },
+        { "lat": 41.0082, "lng": 28.9784, "verse": "Acts 18:1" },
+        { "lat": 35.6895, "lng": 139.6917, "verse": "Acts 21:1" }
+      ],
+      "duration": "3 years",
+      "timePeriod": "AD 46 - AD 49"
+    },
+    {
+      "id": "3",
+      "name": "The Journey to Bethlehem",
+      "description": "The journey of Mary and Joseph to Bethlehem for the census.",
+      "path": [
+        { "lat": 31.7683, "lng": 35.2137, "verse": "Luke 2:1" },
+        { "lat": 31.7000, "lng": 35.2000, "verse": "Luke 2:4" },
+        { "lat": 31.7000, "lng": 35.3000, "verse": "Luke 2:5" }
+      ],
+      "duration": "A few days",
+      "timePeriod": "6 BC"
+    }
+  ]
+}

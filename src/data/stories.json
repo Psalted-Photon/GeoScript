@@ -1,0 +1,90 @@
+[
+    {
+        "id": 1,
+        "title": "The Creation",
+        "description": "The story of the creation of the world as described in Genesis.",
+        "verses": ["Genesis 1:1-31", "Genesis 2:1-3"],
+        "locations": [
+            {
+                "name": "Garden of Eden",
+                "coordinates": {"lat": 31.999, "lng": 35.000}
+            }
+        ]
+    },
+    {
+        "id": 2,
+        "title": "The Exodus",
+        "description": "The journey of the Israelites from slavery in Egypt to freedom.",
+        "verses": ["Exodus 12:31-42", "Exodus 14:1-31"],
+        "locations": [
+            {
+                "name": "Egypt",
+                "coordinates": {"lat": 30.802, "lng": 29.999}
+            },
+            {
+                "name": "Red Sea",
+                "coordinates": {"lat": 29.000, "lng": 34.000}
+            },
+            {
+                "name": "Mount Sinai",
+                "coordinates": {"lat": 28.539, "lng": 33.973}
+            }
+        ]
+    },
+    {
+        "id": 3,
+        "title": "The Life of Jesus",
+        "description": "Key events in the life of Jesus Christ, including his birth, ministry, and crucifixion.",
+        "verses": ["Matthew 1:18-25", "Matthew 28:1-10"],
+        "locations": [
+            {
+                "name": "Bethlehem",
+                "coordinates": {"lat": 31.705, "lng": 35.202}
+            },
+            {
+                "name": "Jerusalem",
+                "coordinates": {"lat": 31.768, "lng": 35.213}
+            },
+            {
+                "name": "Galilee",
+                "coordinates": {"lat": 32.000, "lng": 35.500}
+            }
+        ]
+    },
+    {
+        "id": 4,
+        "title": "The Parables",
+        "description": "Stories told by Jesus to convey moral and spiritual lessons.",
+        "verses": ["Luke 15:11-32", "Matthew 13:1-23"],
+        "locations": [
+            {
+                "name": "Jericho",
+                "coordinates": {"lat": 31.858, "lng": 35.444}
+            },
+            {
+                "name": "Samaria",
+                "coordinates": {"lat": 32.000, "lng": 35.000}
+            }
+        ]
+    },
+    {
+        "id": 5,
+        "title": "The Acts of the Apostles",
+        "description": "The early church's growth and the spread of the Gospel after Jesus' ascension.",
+        "verses": ["Acts 1:8", "Acts 2:1-47"],
+        "locations": [
+            {
+                "name": "Jerusalem",
+                "coordinates": {"lat": 31.768, "lng": 35.213}
+            },
+            {
+                "name": "Antioch",
+                "coordinates": {"lat": 37.001, "lng": 35.321}
+            },
+            {
+                "name": "Rome",
+                "coordinates": {"lat": 41.902, "lng": 12.496}
+            }
+        ]
+    }
+]

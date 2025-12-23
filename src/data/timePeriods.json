@@ -1,0 +1,46 @@
+{
+  "timePeriods": [
+    {
+      "name": "Ancient Israel",
+      "startYear": -1200,
+      "endYear": -586,
+      "description": "The period of the Judges and the united monarchy of Israel.",
+      "mapLayer": "ancient_israel"
+    },
+    {
+      "name": "Exilic Period",
+      "startYear": -586,
+      "endYear": -538,
+      "description": "The time when the Israelites were exiled to Babylon.",
+      "mapLayer": "exilic_period"
+    },
+    {
+      "name": "Second Temple Period",
+      "startYear": -538,
+      "endYear": 70,
+      "description": "The era of the rebuilding of the Temple and the rise of various Jewish sects.",
+      "mapLayer": "second_temple"
+    },
+    {
+      "name": "Roman Judea",
+      "startYear": 6,
+      "endYear": 70,
+      "description": "The period of Roman rule over Judea leading up to the destruction of the Second Temple.",
+      "mapLayer": "roman_judea"
+    },
+    {
+      "name": "Early Christianity",
+      "startYear": 30,
+      "endYear": 100,
+      "description": "The formative years of the Christian church and the spread of its teachings.",
+      "mapLayer": "early_christianity"
+    },
+    {
+      "name": "Byzantine Period",
+      "startYear": 330,
+      "endYear": 640,
+      "description": "The time of the Byzantine Empire's influence in the region.",
+      "mapLayer": "byzantine_period"
+    }
+  ]
+}
