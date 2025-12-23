@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/GeoScript/static/css/main.af5e94e4.css",
+    "main.js": "/GeoScript/static/js/main.75e251f0.js",
+    "index.html": "/GeoScript/index.html",
+    "main.af5e94e4.css.map": "/GeoScript/static/css/main.af5e94e4.css.map",
+    "main.75e251f0.js.map": "/GeoScript/static/js/main.75e251f0.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.af5e94e4.css",
+    "static/js/main.75e251f0.js"
+  ]
+}
