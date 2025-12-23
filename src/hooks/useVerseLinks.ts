@@ -1,8 +1,7 @@
-import { useState, useEffect } from 'react';
-import { fetchVerseLinks } from '../services/bibleService';
+import { useState } from 'react';
 import { Location } from '../types/location';
 
-const useVerseLinks = (verseId: string) => {
+const useVerseLinks = (verseId?: string) => {
     const [verseLinks, setVerseLinks] = useState<Location[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);

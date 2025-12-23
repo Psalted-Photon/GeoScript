@@ -6,11 +6,11 @@ import mapService from '../../services/mapService';
 import { MapPin, TimePeriod, Coordinates, DEFAULT_MAP_CENTER, DEFAULT_ZOOM } from '../../types/map';
 
 // Fix Leaflet default marker icon issue in React
-import icon from 'leaflet/dist/images/marker-icon.png';
-import iconShadow from 'leaflet/dist/images/marker-shadow.png';
+const iconUrl = 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png';
+const iconShadow = 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png';
 
 let DefaultIcon = L.icon({
-    iconUrl: icon,
+    iconUrl: iconUrl,
     shadowUrl: iconShadow,
     iconSize: [25, 41],
     iconAnchor: [12, 41]

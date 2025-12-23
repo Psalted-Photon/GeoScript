@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
 
-const useJourneyAnimation = (journeyData) => {
+const useJourneyAnimation = (journeyData?: any) => {
     const [isAnimating, setIsAnimating] = useState(false);
     const [currentStep, setCurrentStep] = useState(0);
-    const [animationInterval, setAnimationInterval] = useState(null);
+    const [animationInterval, setAnimationInterval] = useState<NodeJS.Timeout | null>(null);
 
     const startAnimation = () => {
         if (journeyData.length === 0) return;

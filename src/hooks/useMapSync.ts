@@ -1,8 +1,6 @@
-import { useEffect, useState } from 'react';
-import { useVerseLinks } from '../hooks/useVerseLinks';
-import { useJourneyAnimation } from '../hooks/useJourneyAnimation';
+import { useState } from 'react';
 
-const useMapSync = (currentVerse: string, mapRef: React.RefObject<any>) => {
+const useMapSync = (currentVerse?: string, mapRef?: React.RefObject<any>) => {
     const [mapPosition, setMapPosition] = useState({ lat: 0, lng: 0 });
     const { getVerseLocation } = useVerseLinks();
     const { isAnimating, startAnimation, stopAnimation } = useJourneyAnimation();
