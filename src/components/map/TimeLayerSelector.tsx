@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import mapService from '../../services/mapService';
-import { TimePeriod } from '../../types/map';
+import { TimePeriod, TimePeriodId } from '../../types/map';
 
 interface TimeLayerSelectorProps {
     currentTimePeriod?: TimePeriod;
@@ -38,11 +38,35 @@ const TimeLayerSelector: React.FC<TimeLayerSelectorProps> = ({
 
     const handleLayerChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         const periodId = event.target.value;
-        const period = mapService.getTimePeriodById(periodId);
         
-        if (period) {
-            setSelectedPeriodId(periodId);
-            onTimePeriodChange(period);
+        if (periodId === 'all') {
+            // Create a special 'all' time period with complete structure
+            const allPeriod: TimePeriod = {
+                id: 'all',
+                name: 'All Periods',
+                displayName: 'All Periods',
+                dateRange: 'All Time',
+                biblicalRange: 'Creation to Revelation',
+                description: 'Displaying all 1,276+ biblical locations across every time period',
+                tileLayer: {
+                    id: 'all',
+                    name: 'All Periods Base Map',
+                    url: mapService.getBaseLayerUrl(),
+                    attribution: '© OpenStreetMap contributors',
+                    minZoom: 2,
+                    maxZoom: 18
+                },
+                defaultCenter: { latitude: 31.7767, longitude: 35.2342 }, // Jerusalem
+                defaultZoom: 6
+            };
+            setSelectedPeriodId('all');
+            onTimePeriodChange(allPeriod);
+        } else {
+            const period = mapService.getTimePeriodById(periodId);
+            if (period) {
+                setSelectedPeriodId(periodId);
+                onTimePeriodChange(period);
+            }
         }
     };
 
@@ -81,7 +105,26 @@ const TimeLayerSelector: React.FC<TimeLayerSelectorProps> = ({
         lineHeight: '1.4'
     };
 
-    const selectedPeriod = timePeriods.find(p => p.id === selectedPeriodId);
+    const selectedPeriod = selectedPeriodId === 'all'
+        ? {
+            id: 'all' as TimePeriodId,
+            name: 'All Periods',
+            displayName: 'All Periods',
+            dateRange: 'All Time',
+            biblicalRange: 'Creation to Revelation',
+            description: 'Displaying all 1,276+ biblical locations across every time period',
+            tileLayer: {
+                id: 'all',
+                name: 'All Periods Base Map',
+                url: '',
+                attribution: '',
+                minZoom: 2,
+                maxZoom: 18
+            },
+            defaultCenter: { latitude: 31.7767, longitude: 35.2342 },
+            defaultZoom: 6
+          } as TimePeriod
+        : timePeriods.find(p => p.id === selectedPeriodId);
 
     return (
         <div style={containerStyle}>
@@ -94,7 +137,8 @@ const TimeLayerSelector: React.FC<TimeLayerSelectorProps> = ({
                 onChange={handleLayerChange}
                 style={selectStyle}
             >
-                <option value="">-- Select Era --</option>
+                <option value="all">All Periods (Show Everything)</option>
+                <option value="" disabled>──────────</option>
                 {timePeriods.map((period) => (
                     <option key={period.id} value={period.id}>
                         {period.displayName} ({period.dateRange})

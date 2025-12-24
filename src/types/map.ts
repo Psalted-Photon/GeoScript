@@ -1,5 +1,8 @@
 // Core map types for Leaflet integration
 
+// Seven Ages of Biblical History (plus 'all' to show everything)
+export type TimePeriodId = 'all' | 'adamic' | 'noachian' | 'abrahamic' | 'mosaic' | 'davidic' | 'ezraitic' | 'christian';
+
 export interface Coordinates {
     latitude: number;
     longitude: number;
@@ -19,7 +22,9 @@ export interface MapPin {
     locationName: string;
     description?: string;
     historicalContext?: string;
-    timePeriodId?: string;
+    timePeriodId?: TimePeriodId;
+    relatedVerses?: string[]; // All verse references for this location (for purple pins)
+    locationType?: 'settlement' | 'region' | 'mountain' | 'water' | 'area' | 'structure';
 }
 
 // Historical map layer configuration
@@ -34,15 +39,16 @@ export interface TileLayer {
 }
 
 export interface TimePeriod {
-    id: string;
+    id: TimePeriodId;
     name: string;
     displayName: string;
-    dateRange: string; // e.g., "2000-1500 BC"
+    dateRange: string;
+    biblicalRange: string;
     description: string;
     tileLayer: TileLayer;
     defaultCenter: Coordinates;
     defaultZoom: number;
-    iconColor?: string; // For UI timeline color coding
+    iconColor?: string;
 }
 
 export interface MapLayer {
@@ -55,7 +61,7 @@ export interface MapLayer {
 
 export interface MapSettings {
     transparency: number; // 0-100, controls overlay opacity
-    currentTimePeriodId: string;
+    currentTimePeriodId: TimePeriodId;
     is3DTerrain: boolean;
     showPins: boolean;
     baseLayerType: 'osm' | 'satellite' | 'terrain' | 'none';
@@ -66,7 +72,7 @@ export interface Journey {
     name: string;
     path: Array<{ latitude: number; longitude: number }>;
     relatedVerses: string[];
-    timePeriodId: string;
+    timePeriodId: TimePeriodId;
 }
 
 export interface LocationSearchResult {

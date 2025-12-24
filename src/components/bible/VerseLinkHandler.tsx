@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { BibleReference } from '../../types/bible';
 import { MapPin } from '../../types/map';
 import { VerseLink } from '../../types/bible';
+import bibleService from '../../services/bibleService';
 
 interface VerseLinkHandlerProps {
     mapPins: MapPin[];
@@ -53,12 +54,16 @@ const VerseLinkHandler: React.FC<VerseLinkHandlerProps> = ({
         if (!match) return null;
 
         const [, book, chapter, verse, endVerse] = match;
+        const bookName = book.trim();
+        const bookNumber = bibleService.getBookNumber(bookName);
         
-        // Simple book number lookup (would need full implementation)
-        const bookNumber = 1; // Placeholder
+        if (!bookNumber) {
+            console.error(`Unable to find book number for: ${bookName}`);
+            return null;
+        }
 
         return {
-            book: book.trim(),
+            book: bookName,
             bookNumber,
             chapter: parseInt(chapter),
             verse: parseInt(verse),

@@ -24,7 +24,7 @@ interface BollsVerseResponse {
  * Chapter verse with metadata
  */
 interface ChapterVerse {
-    number: number;
+    verse: number;
     text: string;
 }
 
@@ -144,17 +144,20 @@ class BibleService {
         
         // Check memory cache first
         if (this.memoryCache.has(cacheKey)) {
+            console.log(`[BibleService] Cache hit (memory): ${cacheKey}`);
             return this.memoryCache.get(cacheKey)!;
         }
 
         // Check IndexedDB cache
         const cachedVerses = await bibleCache.get(cacheKey);
         if (cachedVerses) {
+            console.log(`[BibleService] Cache hit (IndexedDB): ${cacheKey}`);
             this.memoryCache.set(cacheKey, cachedVerses);
             return cachedVerses;
         }
 
         // Fetch from Bolls.life API
+        console.log(`[BibleService] Fetching from API: ${cacheKey}`);
         try {
             const verses: BibleVerse[] = [];
             const endVerse = reference.endVerse || reference.verse;
@@ -215,13 +218,16 @@ class BibleService {
     ): Promise<BollsVerseResponse | null> {
         try {
             const url = `${this.bollsApiUrl}/get-verse/${version}/${bookNumber}/${chapter}/${verse}/`;
+            console.log(`[BibleService] Fetching: ${url}`);
             const response = await fetch(url);
 
             if (!response.ok) {
+                console.warn(`[BibleService] Failed to fetch verse: ${url} - Status: ${response.status}`);
                 return null;
             }
 
             const data: BollsVerseResponse = await response.json();
+            console.log(`[BibleService] Successfully fetched: ${version} ${bookNumber}:${chapter}:${verse}`);
             return data;
         } catch (error) {
             console.error(`Error fetching verse ${bookNumber}:${chapter}:${verse}:`, error);
@@ -233,6 +239,36 @@ class BibleService {
      * Fetch entire chapter from Bolls.life API
      */
     async fetchChapter(
+        bookNumber: number,
+        chapter: number,
+        version: BibleVersionId = DEFAULT_VERSION
+    ): Promise<ChapterVerse[]> {
+        try {
+            const url = `${this.bollsApiUrl}/get-chapter/${version}/${bookNumber}/${chapter}/`;
+            const response = await fetch(url);
+            
+            if (!response.ok) {
+                console.error(`Failed to fetch chapter ${bookNumber}:${chapter} - ${response.status}`);
+                return [];
+            }
+            
+            const data: BollsVerseResponse[] = await response.json();
+            const verses: ChapterVerse[] = data.map(verseData => ({
+                verse: verseData.verse,
+                text: this.cleanVerseText(verseData.text)
+            }));
+            
+            return verses;
+        } catch (error) {
+            console.error(`Error fetching chapter ${bookNumber}:${chapter}:`, error);
+            return [];
+        }
+    }
+
+    /**
+     * Fetch entire chapter from Bolls.life API (OLD METHOD - DEPRECATED)
+     */
+    async fetchChapterOld(
         bookNumber: number,
         chapter: number,
         version: BibleVersionId = DEFAULT_VERSION
@@ -249,7 +285,7 @@ class BibleService {
             }
             
             verses.push({
-                number: verseNum,
+                verse: verseNum,
                 text: this.cleanVerseText(verseData.text)
             });
             
@@ -458,42 +494,82 @@ class BibleService {
 
     /**
      * Get book number (1-66) from book name
+     * Complete mapping from LampStand with all common variants and abbreviations
      */
     getBookNumber(bookName: string): number | null {
         const normalizedName = bookName.toLowerCase().trim();
         
-        // Direct name lookup
-        const book = BIBLE_BOOKS.find(b => b.name.toLowerCase() === normalizedName);
-        if (book) return book.number;
-        
-        // Common abbreviations
-        const abbreviations: Record<string, number> = {
-            'gen': 1, 'exo': 2, 'ex': 2, 'lev': 3, 'num': 4, 'deut': 5, 'deu': 5,
-            'josh': 6, 'jos': 6, 'judg': 7, 'jdg': 7, 'rut': 8,
-            '1sam': 9, '1 sam': 9, '2sam': 10, '2 sam': 10,
-            '1ki': 11, '1 ki': 11, '2ki': 12, '2 ki': 12,
-            '1chr': 13, '1 chr': 13, '2chr': 14, '2 chr': 14,
-            'ezr': 15, 'neh': 16, 'est': 17,
-            'ps': 19, 'psa': 19, 'prov': 20, 'pro': 20, 'eccl': 21, 'ecc': 21,
-            'song': 22, 'sng': 22, 'isa': 23, 'jer': 24, 'lam': 25,
-            'ezek': 26, 'ezk': 26, 'dan': 27, 'hos': 28,
-            'joel': 29, 'amo': 30, 'obad': 31, 'oba': 31, 'jon': 32,
-            'mic': 33, 'nah': 34, 'nam': 34, 'hab': 35,
-            'zeph': 36, 'zep': 36, 'hag': 37,
-            'zech': 38, 'zec': 38, 'mal': 39,
-            'matt': 40, 'mat': 40, 'mt': 40, 'mrk': 41, 'mk': 41,
-            'luk': 42, 'lk': 42, 'jhn': 43, 'jn': 43, 'act': 44,
-            'rom': 45, '1cor': 46, '1 cor': 46, '2cor': 47, '2 cor': 47,
-            'gal': 48, 'eph': 49, 'phil': 50, 'php': 50,
-            'col': 51, '1thess': 52, '1 thess': 52, '2thess': 53, '2 thess': 53,
-            '1tim': 54, '1 tim': 54, '2tim': 55, '2 tim': 55,
-            'tit': 56, 'phlm': 57, 'phm': 57, 'heb': 58,
-            'jas': 59, '1pet': 60, '1 pet': 60, '2pet': 61, '2 pet': 61,
-            '1jn': 62, '1 jn': 62, '2jn': 63, '2 jn': 63,
-            '3jn': 64, '3 jn': 64, 'jude': 65, 'rev': 66
+        // Complete book name and abbreviation map (from LampStand)
+        const bookMap: Record<string, number> = {
+            'genesis': 1, 'gen': 1,
+            'exodus': 2, 'exo': 2, 'ex': 2,
+            'leviticus': 3, 'lev': 3,
+            'numbers': 4, 'num': 4,
+            'deuteronomy': 5, 'deut': 5, 'deu': 5,
+            'joshua': 6, 'josh': 6, 'jos': 6,
+            'judges': 7, 'judg': 7, 'jdg': 7,
+            'ruth': 8, 'rut': 8,
+            '1 samuel': 9, '1samuel': 9, '1sam': 9, '1 sam': 9,
+            '2 samuel': 10, '2samuel': 10, '2sam': 10, '2 sam': 10,
+            '1 kings': 11, '1kings': 11, '1ki': 11, '1 ki': 11,
+            '2 kings': 12, '2kings': 12, '2ki': 12, '2 ki': 12,
+            '1 chronicles': 13, '1chronicles': 13, '1chr': 13, '1 chr': 13,
+            '2 chronicles': 14, '2chronicles': 14, '2chr': 14, '2 chr': 14,
+            'ezra': 15, 'ezr': 15,
+            'nehemiah': 16, 'neh': 16,
+            'esther': 17, 'est': 17,
+            'job': 18,
+            'psalm': 19, 'psalms': 19, 'ps': 19, 'psa': 19,
+            'proverbs': 20, 'prov': 20, 'pro': 20,
+            'ecclesiastes': 21, 'eccl': 21, 'ecc': 21,
+            'song of solomon': 22, 'song': 22, 'sng': 22,
+            'isaiah': 23, 'isa': 23,
+            'jeremiah': 24, 'jer': 24,
+            'lamentations': 25, 'lam': 25,
+            'ezekiel': 26, 'ezek': 26, 'ezk': 26,
+            'daniel': 27, 'dan': 27,
+            'hosea': 28, 'hos': 28,
+            'joel': 29,
+            'amos': 30, 'amo': 30,
+            'obadiah': 31, 'obad': 31, 'oba': 31,
+            'jonah': 32, 'jon': 32,
+            'micah': 33, 'mic': 33,
+            'nahum': 34, 'nah': 34, 'nam': 34,
+            'habakkuk': 35, 'hab': 35,
+            'zephaniah': 36, 'zeph': 36, 'zep': 36,
+            'haggai': 37, 'hag': 37,
+            'zechariah': 38, 'zech': 38, 'zec': 38,
+            'malachi': 39, 'mal': 39,
+            'matthew': 40, 'matt': 40, 'mat': 40, 'mt': 40,
+            'mark': 41, 'mrk': 41, 'mk': 41,
+            'luke': 42, 'luk': 42, 'lk': 42,
+            'john': 43, 'jhn': 43, 'jn': 43,
+            'acts': 44, 'act': 44,
+            'romans': 45, 'rom': 45,
+            '1 corinthians': 46, '1corinthians': 46, '1cor': 46, '1 cor': 46,
+            '2 corinthians': 47, '2corinthians': 47, '2cor': 47, '2 cor': 47,
+            'galatians': 48, 'gal': 48,
+            'ephesians': 49, 'eph': 49,
+            'philippians': 50, 'phil': 50, 'php': 50,
+            'colossians': 51, 'col': 51,
+            '1 thessalonians': 52, '1thessalonians': 52, '1thess': 52, '1 thess': 52,
+            '2 thessalonians': 53, '2thessalonians': 53, '2thess': 53, '2 thess': 53,
+            '1 timothy': 54, '1timothy': 54, '1tim': 54, '1 tim': 54,
+            '2 timothy': 55, '2timothy': 55, '2tim': 55, '2 tim': 55,
+            'titus': 56, 'tit': 56,
+            'philemon': 57, 'phlm': 57, 'phm': 57,
+            'hebrews': 58, 'heb': 58,
+            'james': 59, 'jas': 59,
+            '1 peter': 60, '1peter': 60, '1pet': 60, '1 pet': 60,
+            '2 peter': 61, '2peter': 61, '2pet': 61, '2 pet': 61,
+            '1 john': 62, '1john': 62, '1jn': 62, '1 jn': 62,
+            '2 john': 63, '2john': 63, '2jn': 63, '2 jn': 63,
+            '3 john': 64, '3john': 64, '3jn': 64, '3 jn': 64,
+            'jude': 65, 'jud': 65,
+            'revelation': 66, 'rev': 66,
         };
         
-        return abbreviations[normalizedName] || null;
+        return bookMap[normalizedName] || null;
     }
 
     /**

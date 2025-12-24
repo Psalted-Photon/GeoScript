@@ -1,5 +1,7 @@
+import { TimePeriodId } from './map';
+
 export interface Location {
-    id: string;
+    id: number;
     name: string;
     description?: string;
     coordinates: {
@@ -8,5 +10,12 @@ export interface Location {
     };
     relatedVerses?: string[];
     historicalSignificance?: string;
-    timePeriod?: string;
+    timePeriod?: TimePeriodId;
+    locationType?: 'settlement' | 'region' | 'mountain' | 'water' | 'area' | 'structure';
+    metadata?: {
+        confidence?: number;
+        verseCount?: number;
+        sourceId?: string;
+        types?: string[];
+    };
 }

@@ -27,10 +27,10 @@ class MapService {
     }
 
     /**
-     * Get the default time period (Jesus' Ministry)
+     * Get the default time period (Christian Age)
      */
     public getDefaultTimePeriod(): TimePeriod {
-        return this.getTimePeriodById('jesus-ministry') || this.timePeriods[0];
+        return this.getTimePeriodById('christian') || this.timePeriods[0];
     }
 
     /**

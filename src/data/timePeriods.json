@@ -1,18 +1,63 @@
 {
   "timePeriods": [
     {
-      "id": "patriarchs",
-      "name": "patriarchs",
-      "displayName": "Patriarchs Era",
-      "dateRange": "2000-1500 BC",
-      "description": "The time of Abraham, Isaac, and Jacob. Key locations include Ur, Haran, Canaan, and Egypt.",
+      "id": "adamic",
+      "name": "adamic",
+      "displayName": "Adamic Age",
+      "dateRange": "Creation - c. 2350 BC",
+      "biblicalRange": "Genesis 1–6",
+      "description": "From Creation to the Flood. The age of Adam, Cain and Abel, Enoch, and Noah's preparation for the deluge.",
       "tileLayer": {
-        "id": "patriarchs-layer",
-        "name": "Patriarchs Map",
-        "url": "https://psalted-photon.github.io/GeoScript/tiles/patriarchs/{z}/{x}/{y}.png",
-        "attribution": "Historical Map Data",
-        "minZoom": 5,
-        "maxZoom": 10
+        "id": "adamic-layer",
+        "name": "Adamic Age Map",
+        "url": "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+        "attribution": "&copy; <a href='https://www.openstreetmap.org/copyright'>OpenStreetMap</a> contributors",
+        "minZoom": 2,
+        "maxZoom": 18
+      },
+      "defaultCenter": {
+        "latitude": 33.3,
+        "longitude": 44.4
+      },
+      "defaultZoom": 6,
+      "iconColor": "#006400"
+    },
+    {
+      "id": "noachian",
+      "name": "noachian",
+      "displayName": "Noachian Age",
+      "dateRange": "c. 2350 - 2000 BC",
+      "biblicalRange": "Genesis 7–11",
+      "description": "From the Flood to Abraham. Includes the ark's landing at Ararat, dispersion at Babel, and the Table of Nations.",
+      "tileLayer": {
+        "id": "noachian-layer",
+        "name": "Noachian Age Map",
+        "url": "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+        "attribution": "&copy; <a href='https://www.openstreetmap.org/copyright'>OpenStreetMap</a> contributors",
+        "minZoom": 2,
+        "maxZoom": 18
+      },
+      "defaultCenter": {
+        "latitude": 36.0,
+        "longitude": 42.0
+      },
+      "defaultZoom": 5,
+      "iconColor": "#4682B4"
+    },
+    {
+      "id": "abrahamic",
+      "name": "abrahamic",
+      "displayName": "Abrahamic Age",
+      "dateRange": "2000 - 1446 BC",
+      "biblicalRange": "Genesis 12–50; Exodus 1–19",
+      "description": "From Abraham to the giving of the Law. The patriarchs Abraham, Isaac, Jacob, Joseph in Egypt, and Israel's bondage.",
+      "tileLayer": {
+        "id": "abrahamic-layer",
+        "name": "Abrahamic Age Map",
+        "url": "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+        "attribution": "&copy; <a href='https://www.openstreetmap.org/copyright'>OpenStreetMap</a> contributors",
+        "minZoom": 2,
+        "maxZoom": 18
       },
       "defaultCenter": {
         "latitude": 31.5,
@@ -22,18 +67,19 @@
       "iconColor": "#8B4513"
     },
     {
-      "id": "exodus",
-      "name": "exodus",
-      "displayName": "Exodus & Conquest",
-      "dateRange": "1446-1406 BC",
-      "description": "Journey from Egypt through the wilderness to Canaan. Includes the Red Sea crossing, Mount Sinai, and entry into the Promised Land.",
+      "id": "mosaic",
+      "name": "mosaic",
+      "displayName": "Mosaic Age",
+      "dateRange": "1446 - 1050 BC",
+      "biblicalRange": "Exodus 20 – 1 Samuel 15",
+      "description": "From the Law to David. Wilderness wandering, Mount Sinai, conquest of Canaan, period of judges, and Saul's reign.",
       "tileLayer": {
-        "id": "exodus-layer",
-        "name": "Exodus Route Map",
-        "url": "https://psalted-photon.github.io/GeoScript/tiles/exodus/{z}/{x}/{y}.png",
-        "attribution": "Historical Map Data",
-        "minZoom": 5,
-        "maxZoom": 10
+        "id": "mosaic-layer",
+        "name": "Mosaic Age Map",
+        "url": "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+        "attribution": "&copy; <a href='https://www.openstreetmap.org/copyright'>OpenStreetMap</a> contributors",
+        "minZoom": 2,
+        "maxZoom": 18
       },
       "defaultCenter": {
         "latitude": 30.0,
@@ -43,18 +89,19 @@
       "iconColor": "#DAA520"
     },
     {
-      "id": "united-kingdom",
-      "name": "united-kingdom",
-      "displayName": "United Kingdom",
-      "dateRange": "1050-931 BC",
-      "description": "The reigns of Saul, David, and Solomon. Jerusalem becomes the capital, and the temple is built.",
+      "id": "davidic",
+      "name": "davidic",
+      "displayName": "Davidic Age",
+      "dateRange": "1050 - 538 BC",
+      "biblicalRange": "1 Samuel 16 – 2 Chronicles 36; Prophets",
+      "description": "From David to the Restoration. United kingdom, divided kingdom, prophetic ministry, and exile to Babylon.",
       "tileLayer": {
-        "id": "united-kingdom-layer",
-        "name": "United Kingdom Map",
-        "url": "https://psalted-photon.github.io/GeoScript/tiles/united-kingdom/{z}/{x}/{y}.png",
-        "attribution": "Historical Map Data",
-        "minZoom": 5,
-        "maxZoom": 11
+        "id": "davidic-layer",
+        "name": "Davidic Age Map",
+        "url": "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+        "attribution": "&copy; <a href='https://www.openstreetmap.org/copyright'>OpenStreetMap</a> contributors",
+        "minZoom": 2,
+        "maxZoom": 18
       },
       "defaultCenter": {
         "latitude": 31.7683,
@@ -64,39 +111,41 @@
       "iconColor": "#4169E1"
     },
     {
-      "id": "divided-kingdom",
-      "name": "divided-kingdom",
-      "displayName": "Divided Kingdom",
-      "dateRange": "931-586 BC",
-      "description": "Israel (north) and Judah (south) split. Prophets minister, eventually leading to Assyrian and Babylonian conquests.",
+      "id": "ezraitic",
+      "name": "ezraitic",
+      "displayName": "Ezraitic Age",
+      "dateRange": "538 BC - 4 BC",
+      "biblicalRange": "Ezra–Nehemiah–Esther; Haggai–Malachi; early Gospels",
+      "description": "From Restoration to Christ. Return from exile, temple and wall rebuilding, Persian/Greek periods, and 400 silent years.",
       "tileLayer": {
-        "id": "divided-kingdom-layer",
-        "name": "Divided Kingdom Map",
-        "url": "https://psalted-photon.github.io/GeoScript/tiles/divided-kingdom/{z}/{x}/{y}.png",
-        "attribution": "Historical Map Data",
-        "minZoom": 5,
-        "maxZoom": 11
+        "id": "ezraitic-layer",
+        "name": "Ezraitic Age Map",
+        "url": "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+        "attribution": "&copy; <a href='https://www.openstreetmap.org/copyright'>OpenStreetMap</a> contributors",
+        "minZoom": 2,
+        "maxZoom": 18
       },
       "defaultCenter": {
-        "latitude": 32.0,
-        "longitude": 35.5
+        "latitude": 31.7683,
+        "longitude": 35.2137
       },
       "defaultZoom": 7,
-      "iconColor": "#DC143C"
+      "iconColor": "#9370DB"
     },
     {
-      "id": "jesus-ministry",
-      "name": "jesus-ministry",
-      "displayName": "Jesus' Ministry",
-      "dateRange": "27-30 AD",
-      "description": "The life and ministry of Jesus in Galilee, Judea, and surrounding regions. Includes Nazareth, Capernaum, Jerusalem.",
+      "id": "christian",
+      "name": "christian",
+      "displayName": "Christian Age",
+      "dateRange": "4 BC - Present",
+      "biblicalRange": "Matthew 1 – Revelation 22",
+      "description": "From Christ to the Second Coming. Life and ministry of Jesus, crucifixion and resurrection, early church, apostolic missions, and the age of the church.",
       "tileLayer": {
-        "id": "jesus-ministry-layer",
-        "name": "Jesus Ministry Map",
-        "url": "https://psalted-photon.github.io/GeoScript/tiles/jesus-ministry/{z}/{x}/{y}.png",
-        "attribution": "Historical Map Data",
-        "minZoom": 6,
-        "maxZoom": 12
+        "id": "christian-layer",
+        "name": "Christian Age Map",
+        "url": "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+        "attribution": "&copy; <a href='https://www.openstreetmap.org/copyright'>OpenStreetMap</a> contributors",
+        "minZoom": 2,
+        "maxZoom": 18
       },
       "defaultCenter": {
         "latitude": 32.7,
@@ -104,48 +153,6 @@
       },
       "defaultZoom": 8,
       "iconColor": "#228B22"
-    },
-    {
-      "id": "pauls-journeys",
-      "name": "pauls-journeys",
-      "displayName": "Paul's Missionary Journeys",
-      "dateRange": "46-67 AD",
-      "description": "Paul's three missionary journeys and voyage to Rome. Covers Asia Minor, Greece, and the Mediterranean.",
-      "tileLayer": {
-        "id": "pauls-journeys-layer",
-        "name": "Paul's Journeys Map",
-        "url": "https://psalted-photon.github.io/GeoScript/tiles/pauls-journeys/{z}/{x}/{y}.png",
-        "attribution": "Historical Map Data",
-        "minZoom": 4,
-        "maxZoom": 10
-      },
-      "defaultCenter": {
-        "latitude": 38.0,
-        "longitude": 28.0
-      },
-      "defaultZoom": 5,
-      "iconColor": "#9370DB"
-    },
-    {
-      "id": "early-church",
-      "name": "early-church",
-      "displayName": "Early Church",
-      "dateRange": "30-100 AD",
-      "description": "Spread of Christianity from Jerusalem to the Roman Empire. Seven churches of Revelation, apostolic missions.",
-      "tileLayer": {
-        "id": "early-church-layer",
-        "name": "Early Church Map",
-        "url": "https://psalted-photon.github.io/GeoScript/tiles/early-church/{z}/{x}/{y}.png",
-        "attribution": "Historical Map Data",
-        "minZoom": 4,
-        "maxZoom": 10
-      },
-      "defaultCenter": {
-        "latitude": 37.0,
-        "longitude": 30.0
-      },
-      "defaultZoom": 5,
-      "iconColor": "#FF8C00"
     }
   ]
 }

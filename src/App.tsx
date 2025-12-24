@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import MapViewer from './components/map/MapViewer';
 import MapControls from './components/map/MapControls';
 import VerseReader from './components/bible/VerseReader';
@@ -6,8 +6,11 @@ import BibleVersionSelector from './components/bible/BibleVersionSelector';
 import ParallelReader from './components/bible/ParallelReader';
 import VerseLinkHandler from './components/bible/VerseLinkHandler';
 import mapService from './services/mapService';
+import bibleService from './services/bibleService';
 import { TimePeriod, MapPin } from './types/map';
 import { BibleReference, BibleVersionId, DEFAULT_VERSION } from './types/bible';
+import { Location } from './types/location';
+import locationsData from './data/locations.json';
 
 const App: React.FC = () => {
   // Map state
@@ -16,6 +19,7 @@ const App: React.FC = () => {
   );
   const [transparency, setTransparency] = useState<number>(100);
   const [mapPins, setMapPins] = useState<MapPin[]>([]);
+  const [allPins, setAllPins] = useState<MapPin[]>([]);
   
   // Bible reader state
   const [selectedReference, setSelectedReference] = useState<BibleReference | undefined>(undefined);
@@ -24,231 +28,36 @@ const App: React.FC = () => {
   const [showParallel, setShowParallel] = useState<boolean>(false);
   const [biblePanelVisible, setBiblePanelVisible] = useState<boolean>(false);
   const [selectedPin, setSelectedPin] = useState<MapPin | undefined>(undefined);
+  const [mapCenter, setMapCenter] = useState<{ latitude: number; longitude: number } | undefined>(undefined);
 
-  // Genesis sample pins for testing
-  const genesisPins: MapPin[] = [
-    {
-      id: 'gen-1',
-      locationName: 'Garden of Eden',
-      verseReference: 'Genesis 2:8',
-      coordinates: {
-        latitude: 33.3152,
-        longitude: 44.3661
-      },
-      description: 'Where God placed Adam',
-      timePeriodId: 'patriarchs'
-    },
-    {
-      id: 'gen-2',
-      locationName: 'Ur of the Chaldees',
-      verseReference: 'Genesis 11:31',
-      coordinates: {
-        latitude: 30.9625,
-        longitude: 46.1030
-      },
-      description: "Abram's birthplace",
-      timePeriodId: 'patriarchs'
-    },
-    {
-      id: 'gen-3',
-      locationName: 'Haran',
-      verseReference: 'Genesis 11:31',
-      coordinates: {
-        latitude: 36.8683,
-        longitude: 39.0331
-      },
-      description: "Where Abram's family settled",
-      timePeriodId: 'patriarchs'
-    },
-    {
-      id: 'gen-4',
-      locationName: 'Shechem',
-      verseReference: 'Genesis 12:6',
-      coordinates: {
-        latitude: 32.2141,
-        longitude: 35.2803
-      },
-      description: 'First stop in Canaan',
-      timePeriodId: 'patriarchs'
-    },
-    {
-      id: 'gen-5',
-      locationName: 'Bethel',
-      verseReference: 'Genesis 12:8',
-      coordinates: {
-        latitude: 31.9308,
-        longitude: 35.2202
-      },
-      description: 'Abram built an altar',
-      timePeriodId: 'patriarchs'
-    },
-    {
-      id: 'gen-6',
-      locationName: 'Egypt',
-      verseReference: 'Genesis 12:10',
-      coordinates: {
-        latitude: 30.0444,
-        longitude: 31.2357
-      },
-      description: 'Abram went due to famine',
-      timePeriodId: 'patriarchs'
-    },
-    {
-      id: 'gen-7',
-      locationName: 'Mamre (Hebron)',
-      verseReference: 'Genesis 13:18',
-      coordinates: {
-        latitude: 31.5326,
-        longitude: 35.0998
-      },
-      description: 'Abram settled and built altar',
-      timePeriodId: 'patriarchs'
-    },
-    {
-      id: 'gen-8',
-      locationName: 'Sodom',
-      verseReference: 'Genesis 13:12',
-      coordinates: {
-        latitude: 31.0500,
-        longitude: 35.4000
-      },
-      description: 'Where Lot chose to live',
-      timePeriodId: 'patriarchs'
-    },
-    {
-      id: 'gen-9',
-      locationName: 'Dan',
-      verseReference: 'Genesis 14:14',
-      coordinates: {
-        latitude: 33.2486,
-        longitude: 35.6522
-      },
-      description: 'Abraham pursued captors',
-      timePeriodId: 'patriarchs'
-    },
-    {
-      id: 'gen-10',
-      locationName: 'Beersheba',
-      verseReference: 'Genesis 21:31',
-      coordinates: {
-        latitude: 31.2444,
-        longitude: 34.7925
-      },
-      description: 'Abraham made covenant with Abimelech',
-      timePeriodId: 'patriarchs'
-    },
-    {
-      id: 'gen-11',
-      locationName: 'Mount Moriah',
-      verseReference: 'Genesis 22:2',
-      coordinates: {
-        latitude: 31.7780,
-        longitude: 35.2354
-      },
-      description: 'Abraham offered Isaac',
-      timePeriodId: 'patriarchs'
-    },
-    {
-      id: 'gen-12',
-      locationName: 'Bethel',
-      verseReference: 'Genesis 28:19',
-      coordinates: {
-        latitude: 31.9308,
-        longitude: 35.2202
-      },
-      description: "Jacob's ladder vision",
-      timePeriodId: 'patriarchs'
-    },
-    {
-      id: 'gen-13',
-      locationName: 'Paddan Aram',
-      verseReference: 'Genesis 28:5',
-      coordinates: {
-        latitude: 36.8683,
-        longitude: 39.0331
-      },
-      description: 'Jacob fled to Laban',
-      timePeriodId: 'patriarchs'
-    },
-    {
-      id: 'gen-14',
-      locationName: 'Peniel',
-      verseReference: 'Genesis 32:30',
-      coordinates: {
-        latitude: 32.2158,
-        longitude: 35.6519
-      },
-      description: 'Jacob wrestled with God',
-      timePeriodId: 'patriarchs'
-    },
-    {
-      id: 'gen-15',
-      locationName: 'Dothan',
-      verseReference: 'Genesis 37:17',
-      coordinates: {
-        latitude: 32.4097,
-        longitude: 35.3178
-      },
-      description: 'Joseph sold by his brothers',
-      timePeriodId: 'patriarchs'
-    },
-    {
-      id: 'gen-16',
-      locationName: 'Goshen',
-      verseReference: 'Genesis 47:6',
-      coordinates: {
-        latitude: 30.8333,
-        longitude: 31.4167
-      },
-      description: "Jacob's family settled in Egypt",
-      timePeriodId: 'patriarchs'
-    }
-  ];
+  // Convert Location data to MapPin format
+  const convertLocationToMapPin = (location: Location): MapPin => {
+    return {
+      id: location.id.toString(),
+      locationName: location.name,
+      verseReference: location.relatedVerses[0], // Use first verse as primary reference
+      coordinates: location.coordinates,
+      description: location.description,
+      timePeriodId: location.timePeriod || 'christian',
+      relatedVerses: location.relatedVerses,
+      locationType: location.locationType
+    };
+  };
 
-  // Luke sample pins for testing
-  const lukePins: MapPin[] = [
-    {
-      id: '1',
-      locationName: 'Jerusalem',
-      verseReference: 'Luke 2:41',
-      coordinates: {
-        latitude: 31.7683,
-        longitude: 35.2137
-      },
-      description: 'Jesus at the temple as a boy',
-      timePeriodId: 'jesus-ministry'
-    },
-    {
-      id: '2',
-      locationName: 'Bethlehem',
-      verseReference: 'Luke 2:4',
-      coordinates: {
-        latitude: 31.7054,
-        longitude: 35.2024
-      },
-      description: 'Birth of Jesus',
-      timePeriodId: 'jesus-ministry'
-    },
-    {
-      id: '3',
-      locationName: 'Nazareth',
-      verseReference: 'Luke 2:39',
-      coordinates: {
-        latitude: 32.7022,
-        longitude: 35.2975
-      },
-      description: 'Where Jesus grew up',
-      timePeriodId: 'jesus-ministry'
-    }
-  ];
+  // Load all pins from locations.json on mount
+  useEffect(() => {
+    const locations = locationsData as Location[];
+    const pins = locations.map(convertLocationToMapPin);
+    setAllPins(pins);
+    setMapPins(pins); // Show all pins by default
+  }, []);
 
-  // Combine all sample pins
-  const allSamplePins: MapPin[] = [...genesisPins, ...lukePins];
-
-  // Filter pins by current time period
-  const visiblePins = mapPins.filter(pin => 
-    !pin.timePeriodId || pin.timePeriodId === currentTimePeriod.id
-  );
+  // Filter pins by current time period (or show all if 'all' is selected)
+  const visiblePins = currentTimePeriod.id === 'all' 
+    ? mapPins 
+    : mapPins.filter(pin => 
+        !pin.timePeriodId || pin.timePeriodId === currentTimePeriod.id
+      );
 
   // Handler for time period changes
   const handleTimePeriodChange = (period: TimePeriod) => {
@@ -271,9 +80,16 @@ const App: React.FC = () => {
     const match = pin.verseReference.match(/^(\d?\s*[A-Za-z]+)\s+(\d+):(\d+)(?:-(\d+))?$/);
     if (match) {
       const [, book, chapter, verse, endVerse] = match;
+      const bookNumber = bibleService.getBookNumber(book.trim());
+      
+      if (bookNumber === null) {
+        console.error('Invalid book name:', book);
+        return;
+      }
+      
       const reference: BibleReference = {
         book: book.trim(),
-        bookNumber: 1, // Simplified
+        bookNumber: bookNumber,
         chapter: parseInt(chapter),
         verse: parseInt(verse),
         endVerse: endVerse ? parseInt(endVerse) : undefined
@@ -286,7 +102,26 @@ const App: React.FC = () => {
 
   // Toggle sample pins for testing
   const toggleSamplePins = () => {
-    setMapPins(mapPins.length === 0 ? allSamplePins : []);
+    setMapPins(mapPins.length === 0 ? allPins : []);
+  };
+
+  // Handler for location name clicks in Bible text
+  const handleLocationClick = (locationName: string) => {
+    console.log('Location clicked:', locationName);
+    
+    // Find the pin with this location name
+    const pin = allPins.find(p => p.locationName === locationName);
+    
+    if (pin) {
+      // Center map on the location and select it (highlight on map)
+      setMapCenter(pin.coordinates);
+      setSelectedPin(pin);
+      
+      // Do NOT call handlePinClick - keep Bible text where it is
+      // User can click the pin itself to see other verses
+    } else {
+      console.warn('No pin found for location:', locationName);
+    }
   };
 
   return (
@@ -310,6 +145,8 @@ const App: React.FC = () => {
           transparency={transparency}
           onPinClick={handlePinClick}
           selectedPinId={selectedPin?.id}
+          centerOn={mapCenter}
+          zoom={mapCenter ? 10 : undefined}
         />
 
         {/* Map Controls Overlay */}
@@ -510,6 +347,8 @@ const App: React.FC = () => {
                 version={selectedVersion}
                 showInterlinear={interlinearEnabled}
                 onVerseClick={setSelectedReference}
+                onReferenceChange={setSelectedReference}
+                onLocationClick={handleLocationClick}
               />
             )}
           </div>
