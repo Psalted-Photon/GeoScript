@@ -1,13 +1,13 @@
 {
   "files": {
     "main.css": "/GeoScript/static/css/main.af5e94e4.css",
-    "main.js": "/GeoScript/static/js/main.75e251f0.js",
+    "main.js": "/GeoScript/static/js/main.00120559.js",
     "index.html": "/GeoScript/index.html",
     "main.af5e94e4.css.map": "/GeoScript/static/css/main.af5e94e4.css.map",
-    "main.75e251f0.js.map": "/GeoScript/static/js/main.75e251f0.js.map"
+    "main.00120559.js.map": "/GeoScript/static/js/main.00120559.js.map"
   },
   "entrypoints": [
     "static/css/main.af5e94e4.css",
-    "static/js/main.75e251f0.js"
+    "static/js/main.00120559.js"
   ]
 }
