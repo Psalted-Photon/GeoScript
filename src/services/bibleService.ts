@@ -11,50 +11,110 @@ import {
 import bibleCache from '../utils/bibleCache';
 
 /**
- * Response structure from Bible SuperSearch API (SWORD modules)
+ * Response from Bolls.life API
  */
-interface BibleSuperSearchResponse {
-    results: {
-        [version: string]: Array<{
-            book: string;
-            chapter: number;
-            verse: number;
-            text: string;
-        }>;
-    };
+interface BollsVerseResponse {
+    pk: number;
+    verse: number;
+    text: string;
+    comment?: string;
 }
 
 /**
- * Response structure for interlinear data
+ * Chapter verse with metadata
  */
-interface InterlinearResponse {
-    words: Array<{
-        original: string;
-        transliteration: string;
-        strongs: string;
-        gloss: string;
-        morphology?: string;
-    }>;
+interface ChapterVerse {
+    number: number;
+    text: string;
 }
 
 /**
- * BibleService handles all Bible text fetching using SWORD modules
+ * Bible book metadata
+ */
+interface BibleBook {
+    name: string;
+    number: number;
+    chapters: number;
+}
+
+// All 66 books of the Bible with chapter counts (from LampStand)
+const BIBLE_BOOKS: BibleBook[] = [
+    { name: 'Genesis', number: 1, chapters: 50 },
+    { name: 'Exodus', number: 2, chapters: 40 },
+    { name: 'Leviticus', number: 3, chapters: 27 },
+    { name: 'Numbers', number: 4, chapters: 36 },
+    { name: 'Deuteronomy', number: 5, chapters: 34 },
+    { name: 'Joshua', number: 6, chapters: 24 },
+    { name: 'Judges', number: 7, chapters: 21 },
+    { name: 'Ruth', number: 8, chapters: 4 },
+    { name: '1 Samuel', number: 9, chapters: 31 },
+    { name: '2 Samuel', number: 10, chapters: 24 },
+    { name: '1 Kings', number: 11, chapters: 22 },
+    { name: '2 Kings', number: 12, chapters: 25 },
+    { name: '1 Chronicles', number: 13, chapters: 29 },
+    { name: '2 Chronicles', number: 14, chapters: 36 },
+    { name: 'Ezra', number: 15, chapters: 10 },
+    { name: 'Nehemiah', number: 16, chapters: 13 },
+    { name: 'Esther', number: 17, chapters: 10 },
+    { name: 'Job', number: 18, chapters: 42 },
+    { name: 'Psalms', number: 19, chapters: 150 },
+    { name: 'Proverbs', number: 20, chapters: 31 },
+    { name: 'Ecclesiastes', number: 21, chapters: 12 },
+    { name: 'Song of Solomon', number: 22, chapters: 8 },
+    { name: 'Isaiah', number: 23, chapters: 66 },
+    { name: 'Jeremiah', number: 24, chapters: 52 },
+    { name: 'Lamentations', number: 25, chapters: 5 },
+    { name: 'Ezekiel', number: 26, chapters: 48 },
+    { name: 'Daniel', number: 27, chapters: 12 },
+    { name: 'Hosea', number: 28, chapters: 14 },
+    { name: 'Joel', number: 29, chapters: 3 },
+    { name: 'Amos', number: 30, chapters: 9 },
+    { name: 'Obadiah', number: 31, chapters: 1 },
+    { name: 'Jonah', number: 32, chapters: 4 },
+    { name: 'Micah', number: 33, chapters: 7 },
+    { name: 'Nahum', number: 34, chapters: 3 },
+    { name: 'Habakkuk', number: 35, chapters: 3 },
+    { name: 'Zephaniah', number: 36, chapters: 3 },
+    { name: 'Haggai', number: 37, chapters: 2 },
+    { name: 'Zechariah', number: 38, chapters: 14 },
+    { name: 'Malachi', number: 39, chapters: 4 },
+    { name: 'Matthew', number: 40, chapters: 28 },
+    { name: 'Mark', number: 41, chapters: 16 },
+    { name: 'Luke', number: 42, chapters: 24 },
+    { name: 'John', number: 43, chapters: 21 },
+    { name: 'Acts', number: 44, chapters: 28 },
+    { name: 'Romans', number: 45, chapters: 16 },
+    { name: '1 Corinthians', number: 46, chapters: 16 },
+    { name: '2 Corinthians', number: 47, chapters: 13 },
+    { name: 'Galatians', number: 48, chapters: 6 },
+    { name: 'Ephesians', number: 49, chapters: 6 },
+    { name: 'Philippians', number: 50, chapters: 4 },
+    { name: 'Colossians', number: 51, chapters: 4 },
+    { name: '1 Thessalonians', number: 52, chapters: 5 },
+    { name: '2 Thessalonians', number: 53, chapters: 3 },
+    { name: '1 Timothy', number: 54, chapters: 6 },
+    { name: '2 Timothy', number: 55, chapters: 4 },
+    { name: 'Titus', number: 56, chapters: 3 },
+    { name: 'Philemon', number: 57, chapters: 1 },
+    { name: 'Hebrews', number: 58, chapters: 13 },
+    { name: 'James', number: 59, chapters: 5 },
+    { name: '1 Peter', number: 60, chapters: 5 },
+    { name: '2 Peter', number: 61, chapters: 3 },
+    { name: '1 John', number: 62, chapters: 5 },
+    { name: '2 John', number: 63, chapters: 1 },
+    { name: '3 John', number: 64, chapters: 1 },
+    { name: 'Jude', number: 65, chapters: 1 },
+    { name: 'Revelation', number: 66, chapters: 22 },
+];
+
+/**
+ * BibleService handles all Bible text fetching using Bolls.life API
  */
 class BibleService {
     private memoryCache: Map<string, BibleVerse[]> = new Map();
     private strongsCache: Map<string, StrongsEntry> = new Map();
-    private swordApiUrl = 'https://api.biblesupersearch.com/api';
+    private bollsApiUrl = 'https://bolls.life';
     private initialized = false;
-    
-    // SWORD module mappings for each version
-    private versionModules: { [key in BibleVersionId]: string } = {
-        'KJV': 'KJV',
-        'NIV': 'His parents went to Jerusalem every year for the Passover.',
-        'NET': 'His parents went to Jerusalem every year for the Passover.',
-        'NASB95': 'NASB',
-        'ESV': 'ESV',
-        'CSB': 'HCSB' // Christian Standard Bible uses HCSB module
-    };
 
     /**
      * Initialize the service and IndexedDB
@@ -67,13 +127,12 @@ class BibleService {
             this.initialized = true;
         } catch (error) {
             console.error('Failed to initialize Bible cache:', error);
-            // Continue without cache if initialization fails
             this.initialized = true;
         }
     }
 
     /**
-     * Fetch verses from Bible SuperSearch API (SWORD modules) with caching
+     * Fetch verses from Bolls.life API with caching
      */
     async fetchVerses(
         reference: BibleReference,
@@ -83,119 +142,185 @@ class BibleService {
         
         const cacheKey = this.getCacheKey(reference, version);
         
-        // Check memory cache first (fastest)
+        // Check memory cache first
         if (this.memoryCache.has(cacheKey)) {
             return this.memoryCache.get(cacheKey)!;
         }
 
-        // Check IndexedDB cache (fast)
+        // Check IndexedDB cache
         const cachedVerses = await bibleCache.get(cacheKey);
         if (cachedVerses) {
             this.memoryCache.set(cacheKey, cachedVerses);
             return cachedVerses;
         }
 
-        // Fetch from SWORD API (slow)
+        // Fetch from Bolls.life API
         try {
-            const module = this.versionModules[version];
-            const refString = this.buildReferenceString(reference);
+            const verses: BibleVerse[] = [];
+            const endVerse = reference.endVerse || reference.verse;
             
-            // Bible SuperSearch API supports SWORD modules
-            const response = await fetch(
-                `${this.swordApiUrl}?bible=${module}&reference=${encodeURIComponent(refString)}&format=json`
-            );
-
-            if (!response.ok) {
-                throw new Error(`SWORD API error: ${response.statusText}`);
+            for (let v = reference.verse; v <= endVerse; v++) {
+                const verseData = await this.fetchSingleVerse(
+                    reference.bookNumber,
+                    reference.chapter,
+                    v,
+                    version
+                );
+                
+                if (verseData) {
+                    const verse: BibleVerse = {
+                        reference: {
+                            ...reference,
+                            verse: v,
+                            endVerse: undefined
+                        },
+                        text: this.cleanVerseText(verseData.text),
+                        version: version
+                    };
+                    
+                    // Parse Strong's numbers for KJV
+                    if (version === 'KJV') {
+                        verse.interlinearWords = this.parseStrongsNumbers(verseData.text);
+                    }
+                    
+                    verses.push(verse);
+                }
             }
 
-            const data: BibleSuperSearchResponse = await response.json();
-            
-            // Extract verses from response
-            const moduleResults = data.results[module] || [];
-            
-            const verses: BibleVerse[] = moduleResults.map(v => ({
-                reference: {
-                    book: v.book,
-                    bookNumber: this.getBookNumber(v.book),
-                    chapter: v.chapter,
-                    verse: v.verse
-                },
-                text: v.text.replace(/<[^>]*>/g, ''), // Strip HTML tags
-                version: version
-            }));
-
-            if (verses.length === 0) {
-                // Fallback to mock data if API fails
-                console.warn('No verses returned from SWORD API, using mock data');
-                return this.getMockVerse(reference, version);
+            if (verses.length > 0) {
+                // Cache the result
+                this.memoryCache.set(cacheKey, verses);
+                await bibleCache.set(cacheKey, verses, version, reference.book);
             }
-
-            // Cache the result in both memory and IndexedDB
-            this.memoryCache.set(cacheKey, verses);
-            await bibleCache.set(cacheKey, verses, version, reference.book);
             
             return verses;
         } catch (error) {
-            console.error('Error fetching Bible verses from SWORD:', error);
-            // Return placeholder data for development
-            return this.getMockVerse(reference, version);
+            console.error('Error fetching Bible verses from Bolls.life:', error);
+            return [{
+                reference,
+                text: `[Verse not available: ${reference.book} ${reference.chapter}:${reference.verse} - API error: ${error}]`,
+                version
+            }];
         }
     }
 
     /**
-     * Fetch interlinear data (Hebrew/Greek with Strong's numbers)
-     * Uses SWORD modules with Strong's tagging
+     * Fetch a single verse from Bolls.life API
      */
-    async fetchInterlinear(reference: BibleReference): Promise<InterlinearWord[]> {
-        const cacheKey = `interlinear:${this.buildReferenceString(reference)}`;
-        
+    private async fetchSingleVerse(
+        bookNumber: number,
+        chapter: number,
+        verse: number,
+        version: BibleVersionId
+    ): Promise<BollsVerseResponse | null> {
         try {
-            const refString = this.buildReferenceString(reference);
-            
-            // Use SWORD modules with Strong's numbers (KJV with Strong's)
-            const response = await fetch(
-                `${this.swordApiUrl}?bible=KJVStrongs&reference=${encodeURIComponent(refString)}&format=json&strongs=1`
-            );
+            const url = `${this.bollsApiUrl}/get-verse/${version}/${bookNumber}/${chapter}/${verse}/`;
+            const response = await fetch(url);
 
             if (!response.ok) {
-                console.warn('Interlinear data not available, using mock data');
-                return this.getMockInterlinear(reference);
+                return null;
             }
 
-            const data = await response.json();
-            
-            // Parse Strong's tagged text
-            const words = this.parseStrongsTaggedText(data.results?.KJVStrongs?.[0]?.text || '');
-            
-            return words;
+            const data: BollsVerseResponse = await response.json();
+            return data;
         } catch (error) {
-            console.error('Error fetching interlinear data:', error);
-            // Return mock interlinear for demonstration
-            return this.getMockInterlinear(reference);
+            console.error(`Error fetching verse ${bookNumber}:${chapter}:${verse}:`, error);
+            return null;
         }
     }
 
     /**
-     * Parse Strong's tagged text from SWORD modules
+     * Fetch entire chapter from Bolls.life API
      */
-    private parseStrongsTaggedText(text: string): InterlinearWord[] {
-        const words: InterlinearWord[] = [];
+    async fetchChapter(
+        bookNumber: number,
+        chapter: number,
+        version: BibleVersionId = DEFAULT_VERSION
+    ): Promise<ChapterVerse[]> {
+        const verses: ChapterVerse[] = [];
+        let verseNum = 1;
         
-        // SWORD Strong's format: <w lemma="strong:H430">God</w>
-        const regex = /<w\s+lemma="strong:([HG]\d+)">([^<]+)<\/w>/g;
+        // Loop until we get a 404 (no more verses in chapter)
+        while (verseNum <= 200) { // Safety limit
+            const verseData = await this.fetchSingleVerse(bookNumber, chapter, verseNum, version);
+            
+            if (!verseData) {
+                break;
+            }
+            
+            verses.push({
+                number: verseNum,
+                text: this.cleanVerseText(verseData.text)
+            });
+            
+            verseNum++;
+        }
+        
+        return verses;
+    }
+
+    /**
+     * Get next chapter with infinite looping (Revelation 22 → Genesis 1)
+     */
+    getNextChapter(bookNumber: number, chapter: number): { bookNumber: number; chapter: number } {
+        const book = BIBLE_BOOKS.find(b => b.number === bookNumber);
+        if (!book) return { bookNumber: 1, chapter: 1 };
+        
+        // If not last chapter of book, go to next chapter
+        if (chapter < book.chapters) {
+            return { bookNumber, chapter: chapter + 1 };
+        }
+        
+        // Last chapter of book - go to first chapter of next book
+        if (bookNumber < 66) {
+            return { bookNumber: bookNumber + 1, chapter: 1 };
+        }
+        
+        // Revelation 22 - wrap to Genesis 1
+        return { bookNumber: 1, chapter: 1 };
+    }
+
+    /**
+     * Get previous chapter with infinite looping (Genesis 1 → Revelation 22)
+     */
+    getPreviousChapter(bookNumber: number, chapter: number): { bookNumber: number; chapter: number } {
+        // If not first chapter of book, go to previous chapter
+        if (chapter > 1) {
+            return { bookNumber, chapter: chapter - 1 };
+        }
+        
+        // First chapter of book - go to last chapter of previous book
+        if (bookNumber > 1) {
+            const prevBook = BIBLE_BOOKS.find(b => b.number === bookNumber - 1);
+            if (prevBook) {
+                return { bookNumber: prevBook.number, chapter: prevBook.chapters };
+            }
+        }
+        
+        // Genesis 1 - wrap to Revelation 22
+        return { bookNumber: 66, chapter: 22 };
+    }
+
+    /**
+     * Parse Strong's numbers from KJV text
+     * KJV text contains tags like: "For<S>1063</S> God<S>2316</S>"
+     */
+    private parseStrongsNumbers(kjvText: string): InterlinearWord[] {
+        const words: InterlinearWord[] = [];
+        const regex = /(\w+(?:'[ts])?)<S>(\d+)<\/S>/g;
         let match;
         let position = 1;
         
-        while ((match = regex.exec(text)) !== null) {
-            const strongsNum = match[1];
-            const englishWord = match[2];
+        while ((match = regex.exec(kjvText)) !== null) {
+            const englishWord = match[1];
+            const strongsNum = match[2];
+            const prefix = parseInt(strongsNum) < 10000 ? 'H' : 'G'; // Hebrew or Greek
             
             words.push({
                 position: position++,
-                originalText: '', // Will be populated from Strong's lookup
+                originalText: '', // Would need separate lookup
                 transliteration: '',
-                strongsNumber: strongsNum,
+                strongsNumber: prefix + strongsNum,
                 englishGloss: englishWord,
                 morphology: undefined
             });
@@ -205,69 +330,36 @@ class BibleService {
     }
 
     /**
-     * Get mock interlinear data for demonstration
+     * Clean verse text by removing HTML and Strong's tags
      */
-    private getMockInterlinear(reference: BibleReference): InterlinearWord[] {
-        // Example from John 3:16 in Greek
-        if (reference.book.toLowerCase().includes('john') && reference.chapter === 3 && reference.verse === 16) {
-            return [
-                {
-                    position: 1,
-                    originalText: 'οὕτως',
-                    transliteration: 'houtōs',
-                    strongsNumber: 'G3779',
-                    englishGloss: 'so',
-                    morphology: 'ADV'
-                },
-                {
-                    position: 2,
-                    originalText: 'γὰρ',
-                    transliteration: 'gar',
-                    strongsNumber: 'G1063',
-                    englishGloss: 'for',
-                    morphology: 'CONJ'
-                },
-                {
-                    position: 3,
-                    originalText: 'ἠγάπησεν',
-                    transliteration: 'ēgapēsen',
-                    strongsNumber: 'G25',
-                    englishGloss: 'loved',
-                    morphology: 'V-AAI-3S'
-                },
-                {
-                    position: 4,
-                    originalText: 'ὁ',
-                    transliteration: 'ho',
-                    strongsNumber: 'G3588',
-                    englishGloss: 'the',
-                    morphology: 'T-NSM'
-                },
-                {
-                    position: 5,
-                    originalText: 'Θεὸς',
-                    transliteration: 'Theos',
-                    strongsNumber: 'G2316',
-                    englishGloss: 'God',
-                    morphology: 'N-NSM'
-                },
-                {
-                    position: 6,
-                    originalText: 'τὸν',
-                    transliteration: 'ton',
-                    strongsNumber: 'G3588',
-                    englishGloss: 'the',
-                    morphology: 'T-ASM'
-                },
-                {
-                    position: 7,
-                    originalText: 'κόσμον',
-                    transliteration: 'kosmon',
-                    strongsNumber: 'G2889',
-                    englishGloss: 'world',
-                    morphology: 'N-ASM'
-                }
-            ];
+    private cleanVerseText(text: string): string {
+        // Remove Strong's number tags
+        let cleaned = text.replace(/<S>\d+<\/S>/g, '');
+        // Remove any other HTML tags
+        cleaned = cleaned.replace(/<[^>]*>/g, '');
+        // Decode HTML entities
+        cleaned = this.decodeHtmlEntities(cleaned);
+        return cleaned.trim();
+    }
+
+    /**
+     * Decode HTML entities
+     */
+    private decodeHtmlEntities(text: string): string {
+        const textarea = document.createElement('textarea');
+        textarea.innerHTML = text;
+        return textarea.value;
+    }
+
+    /**
+     * Fetch interlinear data (uses Strong's numbers from KJV)
+     */
+    async fetchInterlinear(reference: BibleReference): Promise<InterlinearWord[]> {
+        // Fetch KJV verse which contains Strong's numbers
+        const kjvVerses = await this.fetchVerses(reference, 'KJV');
+        
+        if (kjvVerses.length > 0 && kjvVerses[0].interlinearWords) {
+            return kjvVerses[0].interlinearWords;
         }
         
         return [];
@@ -282,7 +374,7 @@ class BibleService {
         }
 
         try {
-            // Using a free Strong's API or local data
+            // Using STEPBible API for Strong's lookups
             const response = await fetch(
                 `https://api.stepbible.org/strongs?reference=${strongsNumber}`
             );
@@ -295,10 +387,10 @@ class BibleService {
             
             const entry: StrongsEntry = {
                 number: strongsNumber,
-                lemma: data.lemma,
-                transliteration: data.transliteration,
-                pronunciation: data.pronunciation,
-                definition: data.definition,
+                lemma: data.lemma || '',
+                transliteration: data.transliteration || '',
+                pronunciation: data.pronunciation || '',
+                definition: data.definition || '',
                 kjvTranslations: data.kjv_translations || [],
                 occurrences: data.occurrences || 0
             };
@@ -315,31 +407,34 @@ class BibleService {
      * Get chapter info for navigation
      */
     getChapterInfo(reference: BibleReference): ChapterInfo {
-        const verseCounts = this.getVerseCountsForBook(reference.book);
-        const verseCount = verseCounts[reference.chapter - 1] || 0;
+        const book = BIBLE_BOOKS.find(b => b.number === reference.bookNumber);
+        const verseCount = book?.chapters || 0;
         
         return {
             book: reference.book,
             bookNumber: reference.bookNumber,
             chapter: reference.chapter,
             verseCount,
-            hasNext: reference.chapter < verseCounts.length,
+            hasNext: reference.chapter < (book?.chapters || 0),
             hasPrevious: reference.chapter > 1
         };
     }
 
     /**
-     * Parse a reference string like "John 3:16" into BibleReference
+     * Parse a reference string like "John 3:16" or "Genesis 12:1-3" into BibleReference
      */
     parseReference(refString: string): BibleReference | null {
         const match = refString.match(/^(\d?\s*[A-Za-z]+)\s+(\d+):(\d+)(?:-(\d+))?$/);
         if (!match) return null;
 
         const [, book, chapter, verse, endVerse] = match;
+        const bookNumber = this.getBookNumber(book.trim());
+        
+        if (!bookNumber) return null;
         
         return {
             book: book.trim(),
-            bookNumber: this.getBookNumber(book.trim()),
+            bookNumber,
             chapter: parseInt(chapter),
             verse: parseInt(verse),
             endVerse: endVerse ? parseInt(endVerse) : undefined
@@ -349,12 +444,10 @@ class BibleService {
     /**
      * Build reference string from BibleReference object
      */
-    private buildReferenceString(ref: BibleReference): string {
+    buildReferenceString(ref: BibleReference): string {
         const verseRange = ref.endVerse ? `${ref.verse}-${ref.endVerse}` : `${ref.verse}`;
         return `${ref.book} ${ref.chapter}:${verseRange}`;
     }
-
-
 
     /**
      * Generate cache key for verse lookup
@@ -366,185 +459,53 @@ class BibleService {
     /**
      * Get book number (1-66) from book name
      */
-    private getBookNumber(bookName: string): number {
-        const books = [
-            'Genesis', 'Exodus', 'Leviticus', 'Numbers', 'Deuteronomy', 'Joshua', 'Judges', 'Ruth',
-            '1 Samuel', '2 Samuel', '1 Kings', '2 Kings', '1 Chronicles', '2 Chronicles', 'Ezra', 'Nehemiah',
-            'Esther', 'Job', 'Psalms', 'Proverbs', 'Ecclesiastes', 'Song of Solomon', 'Isaiah', 'Jeremiah',
-            'Lamentations', 'Ezekiel', 'Daniel', 'Hosea', 'Joel', 'Amos', 'Obadiah', 'Jonah', 'Micah',
-            'Nahum', 'Habakkuk', 'Zephaniah', 'Haggai', 'Zechariah', 'Malachi',
-            'Matthew', 'Mark', 'Luke', 'John', 'Acts', 'Romans', '1 Corinthians', '2 Corinthians',
-            'Galatians', 'Ephesians', 'Philippians', 'Colossians', '1 Thessalonians', '2 Thessalonians',
-            '1 Timothy', '2 Timothy', 'Titus', 'Philemon', 'Hebrews', 'James', '1 Peter', '2 Peter',
-            '1 John', '2 John', '3 John', 'Jude', 'Revelation'
-        ];
+    getBookNumber(bookName: string): number | null {
+        const normalizedName = bookName.toLowerCase().trim();
         
-        const index = books.findIndex(b => b.toLowerCase() === bookName.toLowerCase());
-        return index >= 0 ? index + 1 : 1;
-    }
-
-    /**
-     * Get verse counts for each chapter in a book
-     */
-    private getVerseCountsForBook(bookName: string): number[] {
-        // Simplified - in production, use complete verse count data
-        const verseCounts: { [key: string]: number[] } = {
-            'John': [51, 25, 36, 54, 47, 71, 53, 59, 41, 42, 57, 50, 38, 31, 27, 33, 26, 40, 42, 31, 25],
-            'Matthew': [25, 23, 17, 25, 48, 34, 29, 34, 38, 42, 30, 50, 58, 36, 39, 28, 27, 35, 30, 34, 46, 46, 39, 51, 46, 75, 66, 20],
-            'Genesis': [31, 25, 24, 26, 32, 22, 24, 22, 29, 32, 32, 20, 18, 24, 21, 16, 27, 33, 38, 18, 34, 24, 20, 67, 34, 35, 46, 22, 35, 43, 55, 32, 20, 31, 29, 43, 36, 30, 23, 23, 57, 38, 34, 34, 28, 34, 31, 22, 33, 26]
+        // Direct name lookup
+        const book = BIBLE_BOOKS.find(b => b.name.toLowerCase() === normalizedName);
+        if (book) return book.number;
+        
+        // Common abbreviations
+        const abbreviations: Record<string, number> = {
+            'gen': 1, 'exo': 2, 'ex': 2, 'lev': 3, 'num': 4, 'deut': 5, 'deu': 5,
+            'josh': 6, 'jos': 6, 'judg': 7, 'jdg': 7, 'rut': 8,
+            '1sam': 9, '1 sam': 9, '2sam': 10, '2 sam': 10,
+            '1ki': 11, '1 ki': 11, '2ki': 12, '2 ki': 12,
+            '1chr': 13, '1 chr': 13, '2chr': 14, '2 chr': 14,
+            'ezr': 15, 'neh': 16, 'est': 17,
+            'ps': 19, 'psa': 19, 'prov': 20, 'pro': 20, 'eccl': 21, 'ecc': 21,
+            'song': 22, 'sng': 22, 'isa': 23, 'jer': 24, 'lam': 25,
+            'ezek': 26, 'ezk': 26, 'dan': 27, 'hos': 28,
+            'joel': 29, 'amo': 30, 'obad': 31, 'oba': 31, 'jon': 32,
+            'mic': 33, 'nah': 34, 'nam': 34, 'hab': 35,
+            'zeph': 36, 'zep': 36, 'hag': 37,
+            'zech': 38, 'zec': 38, 'mal': 39,
+            'matt': 40, 'mat': 40, 'mt': 40, 'mrk': 41, 'mk': 41,
+            'luk': 42, 'lk': 42, 'jhn': 43, 'jn': 43, 'act': 44,
+            'rom': 45, '1cor': 46, '1 cor': 46, '2cor': 47, '2 cor': 47,
+            'gal': 48, 'eph': 49, 'phil': 50, 'php': 50,
+            'col': 51, '1thess': 52, '1 thess': 52, '2thess': 53, '2 thess': 53,
+            '1tim': 54, '1 tim': 54, '2tim': 55, '2 tim': 55,
+            'tit': 56, 'phlm': 57, 'phm': 57, 'heb': 58,
+            'jas': 59, '1pet': 60, '1 pet': 60, '2pet': 61, '2 pet': 61,
+            '1jn': 62, '1 jn': 62, '2jn': 63, '2 jn': 63,
+            '3jn': 64, '3 jn': 64, 'jude': 65, 'rev': 66
         };
         
-        return verseCounts[bookName] || [31]; // Default to one chapter with 31 verses
+        return abbreviations[normalizedName] || null;
     }
 
     /**
-     * Get mock verse for development/testing with actual verse text
+     * Get book name from book number
      */
-    private getMockVerse(ref: BibleReference, version: BibleVersionId): BibleVerse[] {
-        // Genesis verses - Creation and Patriarchs
-        const genesisTexts: { [chapter: number]: { [verse: number]: { [key in BibleVersionId]: string } } } = {
-            1: {
-                1: {
-                    KJV: 'In the beginning God created the heaven and the earth.',
-                    NIV: 'In the beginning God created the heavens and the earth.',
-                    ESV: 'In the beginning, God created the heavens and the earth.',
-                    NASB95: 'In the beginning God created the heavens and the earth.',
-                    NET: 'In the beginning God created the heavens and the earth.',
-                    CSB: 'In the beginning God created the heavens and the earth.'
-                },
-                27: {
-                    KJV: 'So God created man in his own image, in the image of God created he him; male and female created he them.',
-                    NIV: 'So God created mankind in his own image, in the image of God he created them; male and female he created them.',
-                    ESV: 'So God created man in his own image, in the image of God he created him; male and female he created them.',
-                    NASB95: 'God created man in His own image, in the image of God He created him; male and female He created them.',
-                    NET: 'God created humankind in his own image, in the image of God he created them, male and female he created them.',
-                    CSB: 'So God created man in his own image; he created him in the image of God; he created them male and female.'
-                }
-            },
-            2: {
-                8: {
-                    KJV: 'And the LORD God planted a garden eastward in Eden; and there he put the man whom he had formed.',
-                    NIV: 'Now the LORD God had planted a garden in the east, in Eden; and there he put the man he had formed.',
-                    ESV: 'And the LORD God planted a garden in Eden, in the east, and there he put the man whom he had formed.',
-                    NASB95: 'The LORD God planted a garden toward the east, in Eden; and there He placed the man whom He had formed.',
-                    NET: 'The LORD God planted an orchard in the east, in Eden; and there he placed the man he had formed.',
-                    CSB: 'The LORD God planted a garden in Eden, in the east, and there he placed the man he had formed.'
-                }
-            },
-            12: {
-                1: {
-                    KJV: 'Now the LORD had said unto Abram, Get thee out of thy country, and from thy kindred, and from thy father' + String.fromCharCode(39) + 's house, unto a land that I will shew thee:',
-                    NIV: 'The LORD had said to Abram, "Go from your country, your people and your father' + String.fromCharCode(39) + 's household to the land I will show you.',
-                    ESV: 'Now the LORD said to Abram, "Go from your country and your kindred and your father' + String.fromCharCode(39) + 's house to the land that I will show you.',
-                    NASB95: 'Now the LORD said to Abram, "Go forth from your country, And from your relatives And from your father' + String.fromCharCode(39) + 's house, To the land which I will show you;',
-                    NET: 'Now the LORD said to Abram, "Go out from your country, your relatives, and your father' + String.fromCharCode(39) + 's household to the land that I will show you.',
-                    CSB: 'The LORD said to Abram: Go from your land, your relatives, and your father' + String.fromCharCode(39) + 's house to the land that I will show you.'
-                },
-                7: {
-                    KJV: 'And the LORD appeared unto Abram, and said, Unto thy seed will I give this land: and there builded he an altar unto the LORD, who appeared unto him.',
-                    NIV: 'The LORD appeared to Abram and said, "To your offspring I will give this land." So he built an altar there to the LORD, who had appeared to him.',
-                    ESV: 'Then the LORD appeared to Abram and said, "To your offspring I will give this land." So he built there an altar to the LORD, who had appeared to him.',
-                    NASB95: 'The LORD appeared to Abram and said, "To your descendants I will give this land." So he built an altar there to the LORD who had appeared to him.',
-                    NET: 'The LORD appeared to Abram and said, "To your descendants I will give this land." So Abram built an altar there to the LORD, who had appeared to him.',
-                    CSB: 'The LORD appeared to Abram and said, "I will give this land to your offspring." So he built an altar there to the LORD who had appeared to him.'
-                }
-            },
-            28: {
-                12: {
-                    KJV: 'And he dreamed, and behold a ladder set up on the earth, and the top of it reached to heaven: and behold the angels of God ascending and descending on it.',
-                    NIV: 'He had a dream in which he saw a stairway resting on the earth, with its top reaching to heaven, and the angels of God were ascending and descending on it.',
-                    ESV: 'And he dreamed, and behold, there was a ladder set up on the earth, and the top of it reached to heaven. And behold, the angels of God were ascending and descending on it!',
-                    NASB95: 'He had a dream, and behold, a ladder was set on the earth with its top reaching to heaven; and behold, the angels of God were ascending and descending on it.',
-                    NET: 'and had a dream. He saw a stairway erected on the earth with its top reaching to the heavens. The angels of God were going up and coming down it',
-                    CSB: 'And he dreamed: A stairway was set on the ground with its top reaching the sky, and God' + String.fromCharCode(39) + 's angels were going up and down on it.'
-                }
-            },
-            32: {
-                28: {
-                    KJV: 'And he said, Thy name shall be called no more Jacob, but Israel: for as a prince hast thou power with God and with men, and hast prevailed.',
-                    NIV: 'Then the man said, "Your name will no longer be Jacob, but Israel, because you have struggled with God and with humans and have overcome."',
-                    ESV: 'Then he said, "Your name shall no longer be called Jacob, but Israel, for you have striven with God and with men, and have prevailed."',
-                    NASB95: 'He said, "Your name shall no longer be Jacob, but Israel; for you have striven with God and with men and have prevailed."',
-                    NET: 'The man said, "Your name will no longer be Jacob, but Israel, because you have fought with God and with men and have prevailed."',
-                    CSB: 'Then he said, "Your name will no longer be Jacob. It will be Israel because you have struggled with God and with men and have prevailed."'
-                }
-            }
-        };
-
-        // Luke 2 verses
-        const luke2Texts: { [verse: number]: { [key in BibleVersionId]: string } } = {
-            4: {
-                KJV: 'And Joseph also went up from Galilee, out of the city of Nazareth, into Judaea, unto the city of David, which is called Bethlehem; (because he was of the house and lineage of David:)',
-                NIV: 'So Joseph also went up from the town of Nazareth in Galilee to Judea, to Bethlehem the town of David, because he belonged to the house and line of David.',
-                ESV: 'And Joseph also went up from Galilee, from the town of Nazareth, to Judea, to the city of David, which is called Bethlehem, because he was of the house and lineage of David,',
-                NASB95: 'Joseph also went up from Galilee, from the city of Nazareth, to Judea, to the city of David which is called Bethlehem, because he was of the house and family of David,',
-                NET: 'So Joseph also went up from the town of Nazareth in Galilee to Judea, to the city of David called Bethlehem, because he was of the house and family line of David.',
-                CSB: 'Joseph also went up from the town of Nazareth in Galilee, to Judea, to the city of David, which is called Bethlehem, because he was of the house and family line of David.'
-            },
-            39: {
-                KJV: 'And when they had performed all things according to the law of the Lord, they returned into Galilee, to their own city Nazareth.',
-                NIV: 'When Joseph and Mary had done everything required by the Law of the Lord, they returned to Galilee to their own town of Nazareth.',
-                ESV: 'And when they had performed everything according to the Law of the Lord, they returned into Galilee, to their own town of Nazareth.',
-                NASB95: 'When Joseph and Mary had performed everything according to the Law of the Lord, they returned to Galilee, to their own city of Nazareth.',
-                NET: 'So when Joseph and Mary had performed everything according to the law of the Lord, they returned to Galilee, to their own town of Nazareth.',
-                CSB: 'When they had completed everything according to the law of the Lord, they returned to Galilee, to their own town of Nazareth.'
-            },
-            41: {
-                KJV: 'Now his parents went to Jerusalem every year at the feast of the passover.',
-                NIV: 'Every year Jesus' + String.fromCharCode(39) + ' parents went to Jerusalem for the Festival of the Passover.',
-                ESV: 'Now his parents went to Jerusalem every year at the Feast of the Passover.',
-                NASB95: 'Now His parents went to Jerusalem every year at the Feast of the Passover.',
-                NET: 'Now Jesus' + String.fromCharCode(39) + ' parents went to Jerusalem every year for the feast of the Passover.',
-                CSB: 'Every year his parents traveled to Jerusalem for the Passover Festival.'
-            }
-        };
-
-        // Check for Genesis
-        if (ref.book.toLowerCase().includes('genesis')) {
-            const chapterTexts = genesisTexts[ref.chapter];
-            if (chapterTexts) {
-                const verseText = chapterTexts[ref.verse];
-                if (verseText) {
-                    return [{
-                        reference: ref,
-                        text: verseText[version],
-                        version: version
-                    }];
-                }
-            }
-        }
-
-        // Check if this is Luke 2 (our sample verses)
-        if (ref.book.toLowerCase().includes('luke') && ref.chapter === 2) {
-            const verseText = luke2Texts[ref.verse];
-            if (verseText) {
-                return [{
-                    reference: ref,
-                    text: verseText[version],
-                    version: version
-                }];
-            }
-        }
-
-        // Default fallback (John 3:16)
-        const john316: { [key in BibleVersionId]: string } = {
-            'KJV': 'For God so loved the world, that he gave his only begotten Son, that whosoever believeth in him should not perish, but have everlasting life.',
-            'NIV': 'For God so loved the world that he gave his one and only Son, that whoever believes in him shall not perish but have eternal life.',
-            'ESV': 'For God so loved the world, that he gave his only Son, that whoever believes in him should not perish but have eternal life.',
-            'NASB95': 'For God so loved the world, that He gave His only begotten Son, that whoever believes in Him shall not perish, but have eternal life.',
-            'NET': 'For this is the way God loved the world: He gave his one and only Son, so that everyone who believes in him will not perish but have eternal life.',
-            'CSB': 'For God loved the world in this way: He gave his one and only Son, so that everyone who believes in him will not perish but have eternal life.'
-        };
-
-        return [{
-            reference: ref,
-            text: john316[version],
-            version: version
-        }];
+    getBookName(bookNumber: number): string {
+        const book = BIBLE_BOOKS.find(b => b.number === bookNumber);
+        return book?.name || '';
     }
 
     /**
-     * Clear all caches (useful for memory management)
+     * Clear all caches
      */
     async clearCache(): Promise<void> {
         this.memoryCache.clear();

@@ -1,0 +1,3 @@
+[submodule "lampstand"]
+	path = lampstand
+	url = https://github.com/Psalted-Photon/LampStand.git

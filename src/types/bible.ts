@@ -1,7 +1,7 @@
 /**
  * Bible version identifiers
  */
-export type BibleVersionId = 'KJV' | 'NIV' | 'NET' | 'NASB95' | 'ESV' | 'CSB';
+export type BibleVersionId = 'KJV' | 'NIV' | 'NET' | 'NASB' | 'ESV' | 'NLT';
 
 /**
  * Bible version metadata
@@ -110,10 +110,10 @@ export const BIBLE_VERSIONS: BibleVersion[] = [
         supportsInterlinear: false
     },
     {
-        id: 'NASB95',
-        name: 'NASB95',
-        fullName: 'New American Standard Bible 1995',
-        apiIdentifier: 'nasb1995',
+        id: 'NASB',
+        name: 'NASB',
+        fullName: 'New American Standard Bible',
+        apiIdentifier: 'NASB',
         copyrightYear: '1995',
         supportsInterlinear: false
     },
@@ -121,16 +121,16 @@ export const BIBLE_VERSIONS: BibleVersion[] = [
         id: 'ESV',
         name: 'ESV',
         fullName: 'English Standard Version',
-        apiIdentifier: 'esv',
+        apiIdentifier: 'ESV',
         copyrightYear: '2016',
         supportsInterlinear: false
     },
     {
-        id: 'CSB',
-        name: 'CSB',
-        fullName: 'Christian Standard Bible',
-        apiIdentifier: 'csb',
-        copyrightYear: '2017',
+        id: 'NLT',
+        name: 'NLT',
+        fullName: 'New Living Translation',
+        apiIdentifier: 'NLT',
+        copyrightYear: '2015',
         supportsInterlinear: false
     }
 ];
